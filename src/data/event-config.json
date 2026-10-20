@@ -8,7 +8,7 @@
   "mapsUrl": "https://maps.google.com/?q=El+Poblado+Medellin+Colombia",
   "dressCode": "Elegante Casual / Toque Festivo",
   "motivationalMessage": "¡Gracias por endulzar y transformar cada día con tu esfuerzo y alegría! Este año logramos metas increíbles en cada rincón del país. Ha llegado el momento de celebrar juntos, brindar por nuestros éxitos y vivir una noche mágica.",
-  "logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Crem_Helado_logo.svg/320px-Crem_Helado_logo.svg.png",
+  "logoUrl": "/logo-cremhelado.png",
   "primaryColor": "#E30613",
   "secondaryColor": "#005CA9",
   "whatsappTemplate": "¡Hola {nombre}! 🎉 Tienes una invitación muy especial para nuestra Gran Fiesta de Fin de Año de {empresa}. Confirma tu asistencia y obtén tu pase digital aquí: {link}"

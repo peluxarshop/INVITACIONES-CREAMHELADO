@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faLock,
@@ -48,14 +49,20 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({ onLoginSuccess }
   };
 
   return (
-    <div className="min-h-screen bg-[#fbfbfc] text-slate-800 flex flex-col justify-center items-center px-4 py-12 relative">
+    <div className="min-h-screen bg-[#faf8f5] text-slate-800 flex flex-col justify-center items-center px-4 py-12 relative">
       {/* Fondo suave */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gradient-to-b from-red-100/60 to-transparent blur-3xl pointer-events-none" />
 
-      <div className="relative z-10 w-full max-w-md bg-white border border-slate-200 rounded-3xl shadow-xl p-8 sm:p-10">
+      <div className="relative z-10 w-full max-w-md bg-white border border-[#ebd9c8] rounded-3xl shadow-xl p-8 sm:p-10">
         <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-red-50 text-[#E30613] flex items-center justify-center mx-auto mb-3 text-2xl">
-            <FontAwesomeIcon icon={faIceCream} />
+          <div className="relative w-44 h-16 mx-auto mb-3">
+            <Image
+              src="/logo-cremhelado.png"
+              alt="Crem Helado"
+              fill
+              className="object-contain"
+              priority
+            />
           </div>
           <h2 className="text-2xl font-black text-slate-900 tracking-tight">
             Acceso Administrativo

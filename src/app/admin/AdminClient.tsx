@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faUsers,
@@ -145,26 +146,26 @@ export const AdminClient: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#fbfbfc] text-slate-800 flex flex-col selection:bg-[#E30613] selection:text-white">
+    <div className="min-h-screen bg-[#faf8f5] text-slate-800 flex flex-col selection:bg-[#E30613] selection:text-white">
       {/* Header del Administrador */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#ebd9c8] shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-red-50 text-[#E30613] flex items-center justify-center text-lg shrink-0">
-              <FontAwesomeIcon icon={faIceCream} />
+            <div className="relative w-36 h-10 shrink-0">
+              <Image
+                src="/logo-cremhelado.png"
+                alt="Crem Helado"
+                fill
+                className="object-contain object-left"
+                priority
+              />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-black text-slate-900 text-base tracking-tight">
-                  {config.companyName}
-                </span>
-                <span className="text-xs font-bold text-slate-400">|</span>
-                <span className="text-xs font-bold text-[#E30613]">
-                  Panel Administrativo
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-500 hidden sm:block">
-                Gestión de Invitaciones & KPIs para Fiesta de Despedida
+            <div className="hidden sm:block border-l border-slate-200 pl-3">
+              <span className="text-xs font-black text-[#E30613] tracking-wide uppercase">
+                Panel Administrativo
+              </span>
+              <p className="text-[11px] text-slate-500">
+                Gestión de Invitaciones & KPIs &bull; Fin de Año
               </p>
             </div>
           </div>

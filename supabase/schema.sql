@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS event_config (
   maps_url TEXT NOT NULL DEFAULT 'https://maps.google.com',
   dress_code TEXT NOT NULL DEFAULT 'Elegante Casual / Brillo & Cóctel',
   motivational_message TEXT NOT NULL DEFAULT '¡Ha sido un año extraordinario lleno de logros y momentos inolvidables! Queremos brindar contigo, agradecer tu entrega y celebrar en grande todo lo que alcanzamos juntos.',
-  logo_url TEXT DEFAULT '',
+  logo_url TEXT DEFAULT '/logo-cremhelado.png',
   primary_color TEXT NOT NULL DEFAULT '#E11D48',
   secondary_color TEXT NOT NULL DEFAULT '#F59E0B',
   whatsapp_template TEXT NOT NULL DEFAULT '¡Hola {nombre}! 🎉 Tienes una invitación muy especial para nuestra Fiesta de Fin de Año de {empresa}. Confirma tu asistencia y obtén tu pase digital aquí: {link}',

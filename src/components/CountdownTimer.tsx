@@ -84,7 +84,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
         {units.map((unit, index) => (
           <div
             key={index}
-            className="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-white border border-slate-200 shadow-sm hover:border-[#E30613]/40 transition-all duration-300"
+            className="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-white border border-[#ebd9c8] shadow-sm hover:border-[#E30613]/50 transition-all duration-300"
           >
             <span className="text-2xl sm:text-4xl font-extrabold text-[#E30613] font-mono tracking-tight">
               {String(unit.value).padStart(2, '0')}

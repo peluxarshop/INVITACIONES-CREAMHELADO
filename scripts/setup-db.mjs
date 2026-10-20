@@ -58,6 +58,7 @@ async function run() {
 
     console.log('⚙️ Ejecutando script de creación de tablas e índices (schema.sql)...');
     await client.query(sql);
+    await client.query("UPDATE event_config SET logo_url = '/logo-cremhelado.png' WHERE logo_url IS NULL OR logo_url = '' OR logo_url LIKE '%wikimedia%';");
     console.log('✅ Tablas "event_config" y "guests" creadas exitosamente.');
     console.log('✅ Políticas de seguridad (RLS) habilitadas.');
     console.log('✅ Índices de búsqueda por teléfono, cédula y estado creados.');

@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { QRCodeSVG } from 'qrcode.react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -11,6 +12,13 @@ import {
   faCalendarPlus,
   faMapMarkedAlt,
   faShirt,
+  faExternalLinkAlt,
+  faCopy,
+  faCheck,
+  faUtensils,
+  faGift,
+  faIceCream,
+  faShieldAlt,
 } from '@fortawesome/free-solid-svg-icons';
 import { EventConfig, Guest } from '@/types';
 
@@ -20,13 +28,22 @@ interface DigitalPassProps {
 }
 
 export const DigitalPass: React.FC<DigitalPassProps> = ({ guest, config }) => {
-  const qrData = JSON.stringify({
-    passId: guest.id,
-    name: guest.fullName,
-    cedula: guest.cedula || 'N/A',
-    event: config.eventName,
-    verified: true,
-  });
+  // Inicializamos por defecto con el dominio oficial de producción
+  const [qrUrl, setQrUrl] = useState(`https://meals.peluxar.com/pase/${guest.id}`);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const origin = window.location.origin;
+      // Si estamos en localhost, mantenemos el dominio público de producción
+      // para que al escanear con la cámara del celular siempre abra el pase real
+      if (!origin.includes('localhost') && !origin.includes('127.0.0.1')) {
+        setQrUrl(`${origin}/pase/${guest.id}`);
+      } else {
+        setQrUrl(`https://meals.peluxar.com/pase/${guest.id}`);
+      }
+    }
+  }, [guest.id]);
 
   const formatDate = (dateStr: string) => {
     try {
@@ -45,7 +62,7 @@ export const DigitalPass: React.FC<DigitalPassProps> = ({ guest, config }) => {
   const getCalendarLink = () => {
     const title = encodeURIComponent(`${config.eventName} - ${config.companyName}`);
     const details = encodeURIComponent(
-      `Pase de Entrada VIP para ${guest.fullName}.\nCódigo de Vestimenta: ${config.dressCode}\nLugar: ${config.locationName} (${config.locationAddress})`
+      `Pase de Entrada VIP para ${guest.fullName}.\nCódigo de Vestimenta: ${config.dressCode}\nLugar: ${config.locationName} (${config.locationAddress})\nVer Pase: ${qrUrl}`
     );
     const location = encodeURIComponent(`${config.locationName}, ${config.locationAddress}`);
     const dateFormatted = config.eventDate.replace(/-/g, '');
@@ -53,32 +70,50 @@ export const DigitalPass: React.FC<DigitalPassProps> = ({ guest, config }) => {
     return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dateFormatted}T${startTime}/${dateFormatted}T235900&details=${details}&location=${location}`;
   };
 
+  const handleCopyLink = () => {
+    if (navigator?.clipboard) {
+      navigator.clipboard.writeText(qrUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }
+  };
+
   return (
     <div className="w-full max-w-md mx-auto my-6 animate-in fade-in duration-300">
-      {/* Tarjeta del Pase VIP - Tema Claro Crem Helado */}
-      <div className="relative rounded-3xl overflow-hidden bg-white border border-slate-200 shadow-xl">
-        {/* Adorno superior rojo Crem Helado */}
-        <div className="h-2.5 bg-[#E30613]" />
+      {/* Tarjeta del Pase VIP - Estilo Oficial Corporativo Crem Helado */}
+      <div className="relative rounded-3xl overflow-hidden bg-white border border-[#ebd9c8] shadow-2xl">
+        {/* Adorno superior festivo: Franja roja Crem Helado y oro festivo */}
+        <div className="h-3.5 bg-gradient-to-r from-[#E30613] via-[#D4AF37] to-[#005CA9]" />
 
         <div className="p-6 sm:p-8">
-          {/* Encabezado sin badges cápsula */}
+          {/* Encabezado con Logo Oficial de Recursos */}
           <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-5">
-            <div>
-              <span className="text-xs font-black uppercase tracking-wider text-[#E30613]">
-                Pase de Acceso VIP
-              </span>
-              <h3 className="text-xl font-black text-slate-900 mt-0.5">
-                {config.companyName}
-              </h3>
+            <div className="relative w-36 h-12">
+              <Image
+                src="/logo-cremhelado.png"
+                alt="Crem Helado"
+                fill
+                className="object-contain object-left"
+                priority
+              />
             </div>
-            <div className="flex items-center gap-1.5 text-emerald-600 font-bold text-xs">
-              <FontAwesomeIcon icon={faCheckCircle} className="text-emerald-500" />
+            <div className="flex items-center gap-1.5 text-emerald-700 font-bold text-xs bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+              <FontAwesomeIcon icon={faCheckCircle} className="text-emerald-600" />
               <span>Confirmado</span>
             </div>
           </div>
 
+          <div className="text-center mb-4">
+            <span className="text-[11px] font-black uppercase tracking-widest text-[#E30613] block">
+              Pase Digital VIP Oficial
+            </span>
+            <h2 className="text-sm font-bold text-slate-800 mt-0.5">
+              {config.eventName}
+            </h2>
+          </div>
+
           {/* Nombre y Cédula */}
-          <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/80 mb-5">
+          <div className="bg-[#faf8f5] rounded-2xl p-4 border border-[#ebd9c8] mb-5">
             <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
               Invitado(a) de Honor:
             </span>
@@ -95,20 +130,32 @@ export const DigitalPass: React.FC<DigitalPassProps> = ({ guest, config }) => {
             )}
           </div>
 
+          {/* Beneficios Incluidos */}
+          <div className="grid grid-cols-2 gap-2 text-xs mb-5">
+            <div className="p-2.5 rounded-xl bg-red-50/70 border border-red-100 flex items-center gap-2 text-slate-800">
+              <FontAwesomeIcon icon={faUtensils} className="text-[#E30613]" />
+              <span className="font-bold">Cena de Gala</span>
+            </div>
+            <div className="p-2.5 rounded-xl bg-amber-50/70 border border-amber-200 flex items-center gap-2 text-slate-800">
+              <FontAwesomeIcon icon={faGift} className="text-[#B45309]" />
+              <span className="font-bold">Rifas y Premios</span>
+            </div>
+          </div>
+
           {/* Detalles del Evento */}
           <div className="space-y-3.5 text-xs sm:text-sm text-slate-700 mb-6">
             <div className="flex items-start gap-3">
-              <div className="w-7 h-7 rounded-lg bg-red-50 text-[#E30613] flex items-center justify-center shrink-0 mt-0.5">
+              <div className="w-8 h-8 rounded-xl bg-red-50 text-[#E30613] flex items-center justify-center shrink-0 mt-0.5">
                 <FontAwesomeIcon icon={faCalendarAlt} className="text-xs" />
               </div>
               <div>
                 <p className="font-bold text-slate-900 capitalize">{formatDate(config.eventDate)}</p>
-                <p className="text-slate-500 text-xs">Hora de inicio: {config.eventTime} hrs</p>
+                <p className="text-slate-500 text-xs">Hora de inicio: {config.eventTime} hrs (7:00 PM)</p>
               </div>
             </div>
 
             <div className="flex items-start gap-3">
-              <div className="w-7 h-7 rounded-lg bg-red-50 text-[#E30613] flex items-center justify-center shrink-0 mt-0.5">
+              <div className="w-8 h-8 rounded-xl bg-red-50 text-[#E30613] flex items-center justify-center shrink-0 mt-0.5">
                 <FontAwesomeIcon icon={faMapMarkerAlt} className="text-xs" />
               </div>
               <div>
@@ -119,7 +166,7 @@ export const DigitalPass: React.FC<DigitalPassProps> = ({ guest, config }) => {
 
             {config.dressCode && (
               <div className="flex items-start gap-3 pt-1">
-                <div className="w-7 h-7 rounded-lg bg-red-50 text-[#E30613] flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-8 h-8 rounded-xl bg-red-50 text-[#E30613] flex items-center justify-center shrink-0 mt-0.5">
                   <FontAwesomeIcon icon={faShirt} className="text-xs" />
                 </div>
                 <div>
@@ -132,37 +179,69 @@ export const DigitalPass: React.FC<DigitalPassProps> = ({ guest, config }) => {
 
           {/* Línea de corte tipo ticket */}
           <div className="relative my-6 -mx-8 flex items-center">
-            <div className="w-5 h-8 rounded-r-full bg-[#fbfbfc] border-r border-y border-slate-200" />
+            <div className="w-5 h-8 rounded-r-full bg-[#faf8f5] border-r border-y border-[#ebd9c8]" />
             <div className="flex-1 border-t-2 border-dashed border-slate-300 mx-2" />
-            <div className="w-5 h-8 rounded-l-full bg-[#fbfbfc] border-l border-y border-slate-200" />
+            <div className="w-5 h-8 rounded-l-full bg-[#faf8f5] border-l border-y border-[#ebd9c8]" />
           </div>
 
-          {/* Código QR para ingreso rápido */}
-          <div className="flex flex-col items-center justify-center pt-1">
-            <div className="p-3.5 bg-white rounded-2xl shadow-md border border-slate-200">
+          {/* Código QR para ingreso rápido (URL directa escaneable con cámara) */}
+          <div className="flex flex-col items-center justify-center pt-1 text-center">
+            <span className="text-[10px] font-black uppercase tracking-widest text-[#E30613] mb-2 flex items-center gap-1.5">
+              <FontAwesomeIcon icon={faShieldAlt} />
+              <span>Código QR de Acceso Oficial</span>
+            </span>
+
+            <div className="p-4 bg-white rounded-2xl shadow-lg border-2 border-slate-200 hover:border-[#E30613] transition-all">
               <QRCodeSVG
-                value={qrData}
-                size={140}
+                value={qrUrl}
+                size={160}
                 level="M"
                 includeMargin={false}
               />
             </div>
-            <p className="text-xs text-slate-600 mt-3 text-center font-medium">
-              Presenta este código QR en la entrada para tu registro y rifas
+
+            <p className="text-xs text-slate-800 font-bold mt-3">
+              Escanea este código con la cámara de tu celular
             </p>
-            <p className="text-[11px] font-mono text-slate-400 mt-0.5">
-              ID: {guest.id}
+            <p className="text-[11px] text-slate-500 max-w-xs mt-0.5">
+              Abre automáticamente tu verificación y registro de ingreso en la puerta
+            </p>
+
+            {/* Acciones directas sobre el enlace */}
+            <div className="flex items-center gap-2 mt-3 w-full justify-center">
+              <a
+                href={qrUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-[#005CA9] text-xs font-bold hover:bg-blue-100 transition-colors border border-blue-200"
+              >
+                <FontAwesomeIcon icon={faExternalLinkAlt} className="text-[10px]" />
+                <span>Abrir Pase en Celular</span>
+              </a>
+
+              <button
+                type="button"
+                onClick={handleCopyLink}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 text-xs font-semibold hover:bg-slate-200 transition-colors border border-slate-300 cursor-pointer"
+              >
+                <FontAwesomeIcon icon={copied ? faCheck : faCopy} className={copied ? 'text-emerald-600' : ''} />
+                <span>{copied ? '¡Copiado!' : 'Copiar Enlace'}</span>
+              </button>
+            </div>
+
+            <p className="font-mono text-[10px] text-slate-400 mt-2 break-all">
+              {qrUrl}
             </p>
           </div>
         </div>
 
         {/* Acciones del pase */}
-        <div className="bg-slate-50 p-4 border-t border-slate-200 flex flex-col sm:flex-row gap-2.5">
+        <div className="bg-[#faf8f5] p-4 border-t border-[#ebd9c8] flex flex-col sm:flex-row gap-2.5">
           <a
             href={getCalendarLink()}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#E30613] hover:bg-[#c40510] text-white font-bold text-xs transition-colors shadow-sm"
+            className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#E30613] hover:bg-[#c40510] text-white font-bold text-xs transition-colors shadow-sm"
           >
             <FontAwesomeIcon icon={faCalendarPlus} />
             <span>Añadir a Calendario</span>
@@ -173,7 +252,7 @@ export const DigitalPass: React.FC<DigitalPassProps> = ({ guest, config }) => {
               href={config.mapsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 font-semibold text-xs border border-slate-300 transition-colors"
+              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs border border-slate-300 transition-colors shadow-xs"
             >
               <FontAwesomeIcon icon={faMapMarkedAlt} className="text-[#E30613]" />
               <span>Ver en Google Maps</span>
@@ -183,7 +262,7 @@ export const DigitalPass: React.FC<DigitalPassProps> = ({ guest, config }) => {
       </div>
 
       <div className="text-center mt-3 text-xs text-slate-500">
-        💡 <strong className="text-slate-700">Tip:</strong> Toma una captura de pantalla a este pase para tenerlo a mano el día del evento.
+        💡 <strong className="text-slate-700">Tip:</strong> Toma una captura de pantalla a este pase para tenerlo a mano en la entrada del evento.
       </div>
     </div>
   );
