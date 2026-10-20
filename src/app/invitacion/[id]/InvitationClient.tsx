@@ -16,6 +16,9 @@ import {
   faGift,
   faUtensils,
   faIceCream,
+  faEnvelope,
+  faExclamationTriangle,
+  faSpinner,
 } from '@fortawesome/free-solid-svg-icons';
 import { EventConfig, Guest } from '@/types';
 import { CountdownTimer } from '@/components/CountdownTimer';
@@ -38,6 +41,7 @@ export const InvitationClient: React.FC<InvitationClientProps> = ({ guestId }) =
   const [guest, setGuest] = useState<Guest | null>(null);
   const [loading, setLoading] = useState(true);
   const [modalType, setModalType] = useState<'confirm' | 'decline' | null>(null);
+  const [emailFeedback, setEmailFeedback] = useState<{ status: 'sent' | 'warn' | 'sending'; message: string } | null>(null);
 
   useEffect(() => {
     async function loadData() {
@@ -100,21 +104,39 @@ export const InvitationClient: React.FC<InvitationClientProps> = ({ guestId }) =
     setGuest(finalGuest);
     fireConfetti();
 
-    // Disparar envío automático de correo de confirmación
-    try {
-      const passUrl = typeof window !== 'undefined' ? `${window.location.origin}/invitacion/${guest.id}` : '';
-      await fetch('/api/send-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'confirmation',
-          guest: finalGuest,
-          config,
-          url: passUrl,
-        }),
-      });
-    } catch (e) {
-      console.warn('No se pudo enviar correo automático:', e);
+    // Disparar envío automático de correo de confirmación si hay email
+    if (finalGuest.email) {
+      setEmailFeedback({ status: 'sending', message: `Enviando tu Pase VIP a ${finalGuest.email}...` });
+      try {
+        const passUrl = typeof window !== 'undefined' ? `${window.location.origin}/invitacion/${guest.id}` : '';
+        const res = await fetch('/api/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'confirmation',
+            guest: finalGuest,
+            config,
+            url: passUrl,
+          }),
+        });
+        const resData = await res.json();
+        if (resData.success) {
+          setEmailFeedback({
+            status: 'sent',
+            message: `¡Pase VIP enviado con éxito a tu correo (${finalGuest.email})! Revisa tu bandeja de entrada o spam.`,
+          });
+        } else {
+          setEmailFeedback({
+            status: 'warn',
+            message: resData.error || 'No se pudo entregar el correo automático.',
+          });
+        }
+      } catch (e) {
+        setEmailFeedback({
+          status: 'warn',
+          message: 'Tu asistencia quedó confirmada en el sistema, pero ocurrió un detalle al conectar con el servicio de correo.',
+        });
+      }
     }
   };
 
@@ -299,9 +321,37 @@ export const InvitationClient: React.FC<InvitationClientProps> = ({ guestId }) =
           </div>
         </div>
 
-        {/* Sección de Confirmación / Estado del Invitado */}
         {guest?.status === 'confirmed' ? (
           <div>
+            {/* Alerta de Envío de Correo */}
+            {emailFeedback && (
+              <div
+                className={`mb-4 p-4 rounded-2xl border text-xs flex items-start gap-3 animate-in fade-in ${
+                  emailFeedback.status === 'sent'
+                    ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                    : emailFeedback.status === 'sending'
+                    ? 'bg-blue-50 border-blue-200 text-blue-800'
+                    : 'bg-amber-50 border-amber-200 text-amber-900'
+                }`}
+              >
+                <FontAwesomeIcon
+                  icon={
+                    emailFeedback.status === 'sent'
+                      ? faEnvelope
+                      : emailFeedback.status === 'sending'
+                      ? faSpinner
+                      : faExclamationTriangle
+                  }
+                  className={`text-sm mt-0.5 ${
+                    emailFeedback.status === 'sending' ? 'animate-spin text-blue-600' : ''
+                  }`}
+                />
+                <div className="flex-1">
+                  <p className="font-semibold">{emailFeedback.message}</p>
+                </div>
+              </div>
+            )}
+
             <div className="text-center mb-3">
               <span className="text-emerald-700 font-bold text-xs flex items-center justify-center gap-1.5">
                 <FontAwesomeIcon icon={faCheckCircle} />

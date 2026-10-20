@@ -186,7 +186,11 @@ export async function sendConfirmationEmail(
 
       if (data.error) {
         console.warn('Resend retornó un error:', data.error);
-        return { success: false, error: data.error.message };
+        let errorMsg = data.error.message;
+        if (errorMsg.includes('testing emails to your own email address')) {
+          errorMsg = 'Resend está en modo prueba inicial y solo permite enviar correos a la cuenta registrada (peluxarshop@gmail.com). Para enviar a cualquier colaborador, activa tu dominio en resend.com/domains.';
+        }
+        return { success: false, error: errorMsg };
       }
 
       return { success: true, messageId: data.data?.id };
@@ -321,7 +325,11 @@ export async function sendInvitationEmail(
 
       if (data.error) {
         console.warn('Resend retornó un error:', data.error);
-        return { success: false, error: data.error.message };
+        let errorMsg = data.error.message;
+        if (errorMsg.includes('testing emails to your own email address')) {
+          errorMsg = 'Resend está en modo prueba inicial y solo permite enviar correos a la cuenta registrada (peluxarshop@gmail.com). Para enviar a cualquier colaborador, activa tu dominio en resend.com/domains.';
+        }
+        return { success: false, error: errorMsg };
       }
 
       return { success: true, messageId: data.data?.id };
