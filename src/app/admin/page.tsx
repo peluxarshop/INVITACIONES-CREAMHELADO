@@ -13,9 +13,9 @@ export default function AdminPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-neutral-950 text-white flex flex-col items-center justify-center p-4">
-          <div className="w-12 h-12 border-4 border-amber-400 border-t-transparent rounded-full animate-spin mb-4" />
-          <p className="text-neutral-400 text-sm">Cargando panel...</p>
+        <div className="min-h-screen bg-[#fbfbfc] text-slate-800 flex flex-col items-center justify-center p-4">
+          <div className="w-12 h-12 border-4 border-[#E30613] border-t-transparent rounded-full animate-spin mb-4" />
+          <p className="text-slate-600 font-semibold text-sm">Cargando panel...</p>
         </div>
       }
     >

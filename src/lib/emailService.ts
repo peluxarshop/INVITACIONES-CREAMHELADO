@@ -1,9 +1,26 @@
 import { Resend } from 'resend';
 import { EventConfig, Guest } from '@/types';
 
-const resendApiKey = process.env.RESEND_API_KEY || '';
-const resend = resendApiKey ? new Resend(resendApiKey) : null;
-const fromEmail = process.env.EMAIL_FROM || 'Crem Helado Eventos <onboarding@resend.dev>';
+function getResendClient(): Resend | null {
+  const apiKey =
+    process.env.RESEND_API_KEY ||
+    process.env.RESEND_TOKEN ||
+    process.env.AUTH_RESEND_KEY ||
+    '';
+
+  if (!apiKey || apiKey.includes('placeholder')) {
+    return null;
+  }
+  return new Resend(apiKey);
+}
+
+function getFromEmail(): string {
+  if (process.env.EMAIL_FROM && process.env.EMAIL_FROM.trim()) {
+    return process.env.EMAIL_FROM.trim();
+  }
+  // Remitente predeterminado de prueba de Resend mientras se verifican registros DNS
+  return 'Crem Helado Eventos <onboarding@resend.dev>';
+}
 
 export interface SendEmailResult {
   success: boolean;
@@ -67,6 +84,9 @@ export async function sendConfirmationEmail(
     </html>
   `;
 
+  const resend = getResendClient();
+  const fromEmail = getFromEmail();
+
   if (resend && guest.email) {
     try {
       const data = await resend.emails.send({
@@ -75,6 +95,12 @@ export async function sendConfirmationEmail(
         subject: `¡Asistencia Confirmada! Tu Pase VIP - ${config.eventName}`,
         html: htmlContent,
       });
+
+      if (data.error) {
+        console.warn('Resend retornó un error:', data.error);
+        return { success: false, error: data.error.message };
+      }
+
       return { success: true, messageId: data.data?.id };
     } catch (e: any) {
       console.warn('Error enviando correo vía Resend:', e);
@@ -83,7 +109,7 @@ export async function sendConfirmationEmail(
   }
 
   // Modo simulación si aún no hay clave de Resend configurada
-  console.log(`[Simulación de Correo] Confirmación enviada a ${guest.email} para ${guest.fullName}`);
+  console.log(`[Simulación de Correo] Confirmación para ${guest.email} (${guest.fullName})`);
   return { success: true, simulated: true };
 }
 
@@ -137,6 +163,9 @@ export async function sendInvitationEmail(
     </html>
   `;
 
+  const resend = getResendClient();
+  const fromEmail = getFromEmail();
+
   if (resend && guest.email) {
     try {
       const data = await resend.emails.send({
@@ -145,6 +174,12 @@ export async function sendInvitationEmail(
         subject: `🎉 Invitación Especial: ${config.eventName} - ${config.companyName}`,
         html: htmlContent,
       });
+
+      if (data.error) {
+        console.warn('Resend retornó un error:', data.error);
+        return { success: false, error: data.error.message };
+      }
+
       return { success: true, messageId: data.data?.id };
     } catch (e: any) {
       console.warn('Error enviando correo de invitación:', e);
@@ -152,6 +187,6 @@ export async function sendInvitationEmail(
     }
   }
 
-  console.log(`[Simulación de Correo] Invitación enviada a ${guest.email} para ${guest.fullName}`);
+  console.log(`[Simulación de Correo] Invitación enviada a ${guest.email} (${guest.fullName})`);
   return { success: true, simulated: true };
 }
