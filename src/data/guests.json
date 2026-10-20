@@ -1,0 +1,58 @@
+[
+  {
+    "id": "inv-juan-perez-101",
+    "fullName": "Juan David Pérez Gómez",
+    "firstName": "Juan David",
+    "lastName": "Pérez Gómez",
+    "phone": "573001234567",
+    "email": "juan.perez@cremhelado.com.co",
+    "status": "confirmed",
+    "cedula": "1020456789",
+    "confirmedAt": "2026-10-18T15:30:00Z",
+    "createdAt": "2026-10-15T10:00:00Z"
+  },
+  {
+    "id": "inv-maria-gomez-102",
+    "fullName": "María Camila Gómez",
+    "firstName": "María Camila",
+    "lastName": "Gómez",
+    "phone": "573109876543",
+    "email": "maria.gomez@cremhelado.com.co",
+    "status": "pending",
+    "createdAt": "2026-10-15T10:00:00Z"
+  },
+  {
+    "id": "inv-carlos-rodriguez-103",
+    "fullName": "Carlos Andrés Rodríguez",
+    "firstName": "Carlos Andrés",
+    "lastName": "Rodríguez",
+    "phone": "573155554433",
+    "email": "carlos.rodriguez@cremhelado.com.co",
+    "status": "declined",
+    "confirmedAt": "2026-10-19T09:15:00Z",
+    "notes": "Compromiso familiar fuera de la ciudad",
+    "createdAt": "2026-10-15T10:00:00Z"
+  },
+  {
+    "id": "inv-ana-zapata-104",
+    "fullName": "Ana Sofía Zapata",
+    "firstName": "Ana Sofía",
+    "lastName": "Zapata",
+    "phone": "573208048128",
+    "email": "ana.zapata@cremhelado.com.co",
+    "status": "pending",
+    "createdAt": "2026-10-15T10:00:00Z"
+  },
+  {
+    "id": "inv-santiago-londono-105",
+    "fullName": "Santiago Londoño Castro",
+    "firstName": "Santiago",
+    "lastName": "Londoño Castro",
+    "phone": "573017778899",
+    "email": "santiago.londono@cremhelado.com.co",
+    "status": "confirmed",
+    "cedula": "1037654321",
+    "confirmedAt": "2026-10-20T08:45:00Z",
+    "createdAt": "2026-10-15T10:00:00Z"
+  }
+]
