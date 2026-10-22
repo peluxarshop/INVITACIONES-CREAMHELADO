@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Geist, Geist_Mono, Lilita_One } from 'next/font/google';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import { config } from '@fortawesome/fontawesome-svg-core';
 import './globals.css';
@@ -13,6 +13,13 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
+  subsets: ['latin'],
+});
+
+// Tipografía display redondeada y gruesa, inspirada en el lettering "SUEÑO DE NAVIDAD"
+const lilitaOne = Lilita_One({
+  variable: '--font-lilita',
+  weight: '400',
   subsets: ['latin'],
 });
 
@@ -34,9 +41,9 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${lilitaOne.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#fbfbfc] text-slate-800 font-sans">
+      <body className="min-h-full flex flex-col font-sans">
         {children}
       </body>
     </html>

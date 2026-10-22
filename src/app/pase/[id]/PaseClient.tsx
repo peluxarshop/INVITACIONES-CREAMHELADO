@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -16,11 +15,19 @@ import {
   faShieldAlt,
   faSearch,
   faUserCheck,
-  faIceCream,
   faQrcode,
 } from '@fortawesome/free-solid-svg-icons';
 import { EventConfig, Guest } from '@/types';
 import { Footer } from '@/components/Footer';
+import { SnowEffect } from '@/components/SnowEffect';
+import {
+  FestiveTag,
+  LogoOutlined,
+  Snowflake,
+  StitchedCard,
+  SuenoLockup,
+  FestiveScatteredDecor,
+} from '@/components/festive/Festive';
 import {
   fetchEventConfig,
   fetchGuestById,
@@ -98,24 +105,14 @@ export const PaseClient: React.FC<PaseClientProps> = ({ guestId }) => {
   const handleQuickConfirm = async () => {
     if (!guest) return;
     const updated = await updateGuestStatus(guest.id, 'confirmed');
-    if (updated) {
-      setGuest(updated);
-    } else {
-      setGuest({
-        ...guest,
-        status: 'confirmed',
-        confirmedAt: new Date().toISOString(),
-      });
-    }
+    if (updated) setGuest(updated);
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#faf8f5] text-slate-800 flex flex-col items-center justify-center p-4">
-        <div className="w-12 h-12 border-4 border-[#E30613] border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="text-slate-700 font-semibold text-sm">
-          Verificando pase de acceso oficial...
-        </p>
+      <div className="min-h-screen bg-harlequin flex flex-col items-center justify-center p-4 gap-4">
+        <Snowflake className="w-16 text-white animate-spin" style={{ animationDuration: '3s' }} />
+        <p className="font-display text-pop-sm text-xl">Verificando pase de acceso oficial...</p>
       </div>
     );
   }
@@ -124,49 +121,40 @@ export const PaseClient: React.FC<PaseClientProps> = ({ guestId }) => {
   const isDeclined = guest?.status === 'declined';
 
   return (
-    <div className="min-h-screen bg-[#faf8f5] text-slate-800 flex flex-col justify-between selection:bg-[#E30613] selection:text-white">
+    <div className="min-h-screen flex flex-col bg-harlequin text-slate-800 selection:bg-crem-red selection:text-white relative">
+      <SnowEffect />
+      <FestiveScatteredDecor />
+
       {/* Barra superior con logo oficial */}
-      <header className="bg-white border-b border-[#ebd9c8] py-4 px-4 sticky top-0 z-30 shadow-xs">
+      <header className="bg-crem-green-deep/95 backdrop-blur-md border-b-2 border-white/20 py-3.5 px-4 sticky top-0 z-30 shadow-md">
         <div className="max-w-md mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <div className="relative w-32 h-11">
-              <Image
-                src="/logo-cremhelado.png"
-                alt="Crem Helado"
-                fill
-                className="object-contain object-left"
-                priority
-              />
-            </div>
+            <LogoOutlined className="w-28 h-12" />
           </Link>
-          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-200">
-            <FontAwesomeIcon icon={faShieldAlt} className="text-[#E30613]" />
+          <div className="flex items-center gap-1.5 text-xs font-bold text-white bg-white/15 px-3 py-1.5 rounded-full border border-white/30">
+            <FontAwesomeIcon icon={faShieldAlt} className="text-crem-gold" />
             <span>Control de Ingreso</span>
           </div>
         </div>
       </header>
 
       {/* Contenido Principal */}
-      <main className="flex-1 max-w-md w-full mx-auto p-4 sm:p-6 my-auto">
+      <main className="flex-1 max-w-md w-full mx-auto p-4 sm:p-6 my-auto relative z-20">
         {guest ? (
-          <div className="bg-white border border-[#ebd9c8] rounded-3xl shadow-xl overflow-hidden text-center">
+          <StitchedCard bodyClassName="overflow-hidden text-center">
             {/* Header de Estado con indicador visual potente */}
             <div
               className={`p-6 sm:p-7 ${
                 isConfirmed
-                  ? 'bg-gradient-to-b from-emerald-50 via-emerald-50/50 to-white border-b border-emerald-100'
+                  ? 'bg-crem-green text-white'
                   : isDeclined
-                  ? 'bg-gradient-to-b from-rose-50 via-rose-50/50 to-white border-b border-rose-100'
-                  : 'bg-gradient-to-b from-amber-50 via-amber-50/50 to-white border-b border-amber-100'
+                  ? 'bg-rose-700 text-white'
+                  : 'bg-amber-600 text-white'
               }`}
             >
               <div
-                className={`w-20 h-20 rounded-full mx-auto mb-3.5 flex items-center justify-center text-3xl shadow-sm ${
-                  isConfirmed
-                    ? 'bg-emerald-600 text-white shadow-emerald-500/25 ring-4 ring-emerald-100'
-                    : isDeclined
-                    ? 'bg-rose-600 text-white shadow-rose-500/25 ring-4 ring-rose-100'
-                    : 'bg-amber-500 text-white shadow-amber-500/25 ring-4 ring-amber-100'
+                className={`w-20 h-20 rounded-full mx-auto mb-3.5 flex items-center justify-center text-3xl shadow-xl ring-4 ring-white/40 ${
+                  isConfirmed ? 'bg-white text-crem-green' : isDeclined ? 'bg-white text-rose-700' : 'bg-white text-amber-600'
                 }`}
               >
                 <FontAwesomeIcon
@@ -174,27 +162,19 @@ export const PaseClient: React.FC<PaseClientProps> = ({ guestId }) => {
                 />
               </div>
 
-              <span className="text-[11px] font-black uppercase tracking-widest text-slate-500 block">
+              <span className="font-display uppercase text-xs tracking-widest text-white/90 block">
                 Pase Digital VIP Oficial &bull; Crem Helado
               </span>
 
-              <h1
-                className={`text-2xl font-black mt-1 ${
-                  isConfirmed
-                    ? 'text-emerald-800'
-                    : isDeclined
-                    ? 'text-rose-800'
-                    : 'text-amber-800'
-                }`}
-              >
+              <h1 className="font-display text-3xl sm:text-4xl mt-1 leading-none text-white drop-shadow-sm">
                 {isConfirmed
                   ? '¡PASE AUTORIZADO!'
                   : isDeclined
                   ? 'ASISTENCIA DECLINADA'
-                  : 'PASE PENDIENTE POR CONFIRMAR'}
+                  : 'PASE PENDIENTE'}
               </h1>
 
-              <p className="text-xs text-slate-600 mt-1.5 max-w-xs mx-auto">
+              <p className="text-xs text-white/95 font-medium mt-2 max-w-xs mx-auto">
                 {isConfirmed
                   ? 'Acceso habilitado para 1 colaborador + Cena de Gala + Rifas de Fin de Año'
                   : isDeclined
@@ -205,17 +185,17 @@ export const PaseClient: React.FC<PaseClientProps> = ({ guestId }) => {
 
             {/* Información del Colaborador */}
             <div className="p-6 space-y-4 text-left text-sm">
-              <div className="p-4 rounded-2xl bg-[#faf8f5] border border-[#ebd9c8]">
-                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
+              <div className="p-4 rounded-2xl bg-[#FAF6EE] border border-[#e5d8c3]">
+                <span className="font-display uppercase text-xs tracking-wider text-crem-green block">
                   Colaborador(a) / Invitado(a):
                 </span>
-                <div className="text-xl font-black text-slate-900 mt-0.5 tracking-tight">
+                <div className="font-display text-slate-900 text-2xl leading-tight mt-0.5 break-words">
                   {guest.fullName}
                 </div>
 
                 {guest.cedula && (
                   <div className="mt-2 flex items-center gap-2 text-xs">
-                    <span className="font-semibold text-slate-500">C.C. / Documento:</span>
+                    <span className="font-bold text-slate-600">C.C. / Documento:</span>
                     <span className="font-mono font-bold text-slate-900 bg-white px-2 py-0.5 rounded border border-slate-300">
                       {guest.cedula}
                     </span>
@@ -223,7 +203,7 @@ export const PaseClient: React.FC<PaseClientProps> = ({ guestId }) => {
                 )}
 
                 {guest.confirmedAt && (
-                  <div className="mt-1.5 text-[11px] text-slate-500">
+                  <div className="mt-1.5 text-xs text-slate-500">
                     Confirmado el: {new Date(guest.confirmedAt).toLocaleString('es-CO')}
                   </div>
                 )}
@@ -231,26 +211,26 @@ export const PaseClient: React.FC<PaseClientProps> = ({ guestId }) => {
 
               {/* Beneficios Incluidos */}
               <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="p-3 rounded-xl bg-red-50/70 border border-red-100 flex items-center gap-2.5 text-slate-800">
-                  <FontAwesomeIcon icon={faUtensils} className="text-[#E30613]" />
-                  <span className="font-bold">Cena de Gala</span>
+                <div className="p-3 rounded-xl bg-red-50 border border-red-200 flex items-center gap-2.5 text-slate-900 font-bold">
+                  <FontAwesomeIcon icon={faUtensils} className="text-crem-red text-sm" />
+                  <span>Cena de Gala</span>
                 </div>
-                <div className="p-3 rounded-xl bg-amber-50/70 border border-amber-200 flex items-center gap-2.5 text-slate-800">
-                  <FontAwesomeIcon icon={faGift} className="text-[#B45309]" />
-                  <span className="font-bold">Boleta de Rifas</span>
+                <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 flex items-center gap-2.5 text-slate-900 font-bold">
+                  <FontAwesomeIcon icon={faGift} className="text-amber-600 text-sm" />
+                  <span>Boleta Rifas</span>
                 </div>
               </div>
 
               {/* Detalles del Evento */}
               <div className="space-y-2 pt-2 border-t border-slate-100 text-xs text-slate-600">
                 <div className="flex items-start gap-2.5">
-                  <FontAwesomeIcon icon={faCalendarAlt} className="text-[#E30613] mt-0.5" />
+                  <FontAwesomeIcon icon={faCalendarAlt} className="text-crem-red mt-0.5" />
                   <span>
                     <strong>Fecha:</strong> {config.eventDate} | <strong>Hora:</strong> {config.eventTime} hrs
                   </span>
                 </div>
                 <div className="flex items-start gap-2.5">
-                  <FontAwesomeIcon icon={faMapMarkerAlt} className="text-[#E30613] mt-0.5" />
+                  <FontAwesomeIcon icon={faMapMarkerAlt} className="text-crem-green mt-0.5" />
                   <span>
                     <strong>Lugar:</strong> {config.locationName} ({config.locationAddress})
                   </span>
@@ -260,12 +240,12 @@ export const PaseClient: React.FC<PaseClientProps> = ({ guestId }) => {
               {/* Check-In Interactivo de Puerta */}
               <div className="pt-2">
                 {checkedInTime ? (
-                  <div className="p-3.5 rounded-2xl bg-emerald-50 border-2 border-emerald-500 text-center animate-in zoom-in-95">
-                    <div className="text-emerald-700 font-black text-sm flex items-center justify-center gap-1.5">
+                  <div className="p-4 rounded-2xl bg-crem-green text-white text-center shadow-lg animate-in zoom-in-95">
+                    <div className="font-display text-lg flex items-center justify-center gap-2">
                       <FontAwesomeIcon icon={faUserCheck} />
                       <span>INGRESO REGISTRADO EN PUERTA</span>
                     </div>
-                    <p className="text-xs text-emerald-800 font-semibold mt-0.5">
+                    <p className="text-xs text-white/90 font-medium mt-1">
                       Hora de ingreso: {checkedInTime}
                     </p>
                   </div>
@@ -273,16 +253,16 @@ export const PaseClient: React.FC<PaseClientProps> = ({ guestId }) => {
                   <button
                     type="button"
                     onClick={handleCheckIn}
-                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs transition-colors shadow-sm cursor-pointer"
+                    className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-full bg-crem-green hover:bg-crem-green-dark text-white font-display text-base tracking-wide shadow-[0_5px_0_#043F1E] hover:translate-y-0.5 active:translate-y-1 transition-all cursor-pointer"
                   >
                     <FontAwesomeIcon icon={faUserCheck} />
-                    <span>MARCAR INGRESO EN PUERTA (CHECK-IN)</span>
+                    <span>MARCAR INGRESO EN PUERTA</span>
                   </button>
                 ) : (
                   <button
                     type="button"
                     onClick={handleQuickConfirm}
-                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl bg-[#E30613] hover:bg-[#c40510] text-white font-black text-xs transition-colors shadow-sm cursor-pointer"
+                    className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-full bg-crem-red hover:bg-crem-red-dark text-white font-display text-base tracking-wide shadow-[0_5px_0_#8E0A12] hover:translate-y-0.5 active:translate-y-1 transition-all cursor-pointer"
                   >
                     <FontAwesomeIcon icon={faCheckCircle} />
                     <span>CONFIRMAR ASISTENCIA EN PUERTA</span>
@@ -294,42 +274,40 @@ export const PaseClient: React.FC<PaseClientProps> = ({ guestId }) => {
               <div className="pt-1">
                 <Link
                   href={`/invitacion/${guest.id}`}
-                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors"
+                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors"
                 >
                   <FontAwesomeIcon icon={faArrowLeft} />
-                  <span>Ver Invitación Completa del Invitado</span>
+                  <span>Ver Invitación Completa</span>
                 </Link>
               </div>
             </div>
-          </div>
+          </StitchedCard>
         ) : (
           /* En caso de que el ID escaneado no exista */
-          <div className="bg-white border border-[#ebd9c8] rounded-3xl shadow-xl p-6 sm:p-8 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-4 text-2xl">
+          <StitchedCard bodyClassName="p-6 sm:p-8 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-4 text-2xl border border-amber-200">
               <FontAwesomeIcon icon={faQrcode} />
             </div>
 
-            <h2 className="text-xl font-black text-slate-900 mb-1">
+            <h2 className="font-display text-slate-900 text-3xl leading-none mb-1">
               Verificación de Pase
             </h2>
-            <p className="text-xs text-slate-500 mb-6">
+            <p className="text-xs text-slate-600 mb-6">
               El código escaneado no coincide con ningún registro previo. Puedes buscar al colaborador por cédula o nombre:
             </p>
 
             <form onSubmit={handleSearch} className="space-y-3 mb-4">
-              <div className="relative">
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Número de Cédula o Nombre..."
-                  className="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-[#E30613]"
-                />
-              </div>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Número de Cédula o Nombre..."
+                className="w-full px-4 py-3 rounded-full border-2 border-slate-300 text-sm focus:outline-none focus:border-crem-green text-slate-900 bg-white"
+              />
 
               <button
                 type="submit"
-                className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#E30613] hover:bg-[#c40510] text-white font-bold text-xs transition-colors cursor-pointer"
+                className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-crem-green hover:bg-crem-green-dark text-white font-display text-base tracking-wide shadow-[0_4px_0_#043F1E] hover:translate-y-0.5 active:translate-y-1 transition-all cursor-pointer"
               >
                 <FontAwesomeIcon icon={faSearch} />
                 <span>Buscar Invitado</span>
@@ -337,16 +315,16 @@ export const PaseClient: React.FC<PaseClientProps> = ({ guestId }) => {
             </form>
 
             {searchError && (
-              <p className="text-xs text-rose-600 font-medium mb-3">{searchError}</p>
+              <p className="text-xs text-crem-red font-bold mb-3">{searchError}</p>
             )}
 
             <Link
               href="/"
-              className="text-xs text-slate-500 hover:text-slate-800 underline block"
+              className="text-xs text-crem-green font-bold underline block"
             >
               Volver a la página principal
             </Link>
-          </div>
+          </StitchedCard>
         )}
       </main>
 

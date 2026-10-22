@@ -20,6 +20,7 @@ import { AdminCsvUpload } from '@/components/admin/AdminCsvUpload';
 import { AdminEventConfig } from '@/components/admin/AdminEventConfig';
 import { AdminLoginForm } from '@/components/admin/AdminLoginForm';
 import { Footer } from '@/components/Footer';
+import { SnowEffect } from '@/components/SnowEffect';
 import {
   fetchEventConfig,
   saveEventConfig,
@@ -146,7 +147,13 @@ export const AdminClient: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#faf8f5] text-slate-800 flex flex-col selection:bg-[#E30613] selection:text-white">
+    <div className="min-h-screen bg-[#faf6ee] text-slate-800 flex flex-col selection:bg-[#E30613] selection:text-white relative overflow-hidden">
+      {/* Efecto de Nieve Suave */}
+      <SnowEffect />
+
+      {/* Franja festiva superior caramelo */}
+      <div className="relative z-50 h-2 w-full candy-stripe" />
+
       {/* Header del Administrador */}
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#ebd9c8] shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -161,11 +168,16 @@ export const AdminClient: React.FC = () => {
               />
             </div>
             <div className="hidden sm:block border-l border-slate-200 pl-3">
-              <span className="text-xs font-black text-[#E30613] tracking-wide uppercase">
-                Panel Administrativo
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-black text-[#E30613] tracking-wide uppercase">
+                  Panel Administrativo
+                </span>
+                <span className="text-[10px] font-black text-[#006837] bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                  Sueño de Navidad
+                </span>
+              </div>
               <p className="text-[11px] text-slate-500">
-                Gestión de Invitaciones & KPIs &bull; Fin de Año
+                Gestión de Invitaciones &bull; Celebración Fin de Año 2026
               </p>
             </div>
           </div>

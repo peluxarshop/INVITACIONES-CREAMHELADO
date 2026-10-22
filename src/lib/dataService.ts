@@ -77,6 +77,8 @@ export async function fetchEventConfig(): Promise<EventConfig> {
           primaryColor: data.primary_color || DEFAULT_CONFIG.primaryColor,
           secondaryColor: data.secondary_color || DEFAULT_CONFIG.secondaryColor,
           whatsappTemplate: data.whatsapp_template || DEFAULT_CONFIG.whatsappTemplate,
+          musicEnabled: data.music_enabled !== undefined ? data.music_enabled : (DEFAULT_CONFIG.musicEnabled ?? true),
+          musicUrl: data.music_url || DEFAULT_CONFIG.musicUrl || '/audio/navidad-suave.mp3',
         };
       }
     } catch (e) {
@@ -92,7 +94,7 @@ export async function saveEventConfig(config: EventConfig): Promise<EventConfig>
 
   if (isSupabaseConfigured && supabase) {
     try {
-      const payload = {
+      const payload: Record<string, unknown> = {
         event_name: config.eventName,
         company_name: config.companyName,
         event_date: config.eventDate,
@@ -106,6 +108,8 @@ export async function saveEventConfig(config: EventConfig): Promise<EventConfig>
         primary_color: config.primaryColor,
         secondary_color: config.secondaryColor,
         whatsapp_template: config.whatsappTemplate,
+        music_enabled: config.musicEnabled ?? true,
+        music_url: config.musicUrl || '/audio/navidad-suave.mp3',
         updated_at: new Date().toISOString(),
       };
 

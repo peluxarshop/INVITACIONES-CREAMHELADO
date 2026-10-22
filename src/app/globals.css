@@ -1,28 +1,256 @@
 @import "tailwindcss";
 
+/* =========================================================
+   CREM HELADO · SUEÑO DE NAVIDAD — Sistema de diseño
+   Referencia oficial: piezas gráficas de /recursos
+   ========================================================= */
+
 :root {
-  --background: #faf8f5;
+  --background: #0B7A3C;
   --foreground: #1e293b;
+
+  /* Rojos oficiales de campaña */
   --crem-red: #E30613;
-  --crem-red-hover: #c40510;
-  --crem-blue: #005CA9;
-  --crem-gold: #D4AF37;
-  --crem-yellow: #FFB800;
+  --crem-red-dark: #B8040F;
+  --crem-red-deep: #8E0A12;
+
+  /* Verdes oficiales de campaña (rombos / pino) */
+  --crem-green: #0B8A3E;
+  --crem-green-mid: #0B7A3C;
+  --crem-green-dark: #075C2C;
+  --crem-green-deep: #043F1E;
+
+  /* Neutros */
+  --crem-cream: #FFF8EC;
+  --crem-gold: #F2C94C;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-crem-red: var(--crem-red);
-  --color-crem-blue: var(--crem-blue);
-  --color-crem-gold: var(--crem-gold);
+  --color-crem-red: #E30613;
+  --color-crem-red-dark: #B8040F;
+  --color-crem-red-deep: #8E0A12;
+  --color-crem-green: #0B8A3E;
+  --color-crem-green-mid: #0B7A3C;
+  --color-crem-green-dark: #075C2C;
+  --color-crem-green-deep: #043F1E;
+  --color-crem-cream: #FFF8EC;
+  --color-crem-gold: #F2C94C;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-lilita), var(--font-geist-sans), system-ui, sans-serif;
+}
+
+html,
+body {
+  overflow-x: clip;
 }
 
 body {
-  background: #faf8f5;
+  background-color: #0B7A3C;
   color: #1e293b;
   font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
+}
+
+/* ---------------------------------------------------------
+   FONDOS DE CAMPAÑA (SVG Vectorial 100% compatible y vibrante)
+   --------------------------------------------------------- */
+
+/* Textura Harlequin de rombos verdes — imagen "Se cumplió mi Sueño de Navidad" */
+.bg-harlequin {
+  background-color: #0A7438;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230A7438'/%3E%3Cpolygon points='32,0 64,32 32,64 0,32' fill='%23075F2D'/%3E%3C/svg%3E");
+  background-size: 64px 64px;
+  background-repeat: repeat;
+}
+
+@media (max-width: 640px) {
+  .bg-harlequin {
+    background-size: 44px 44px;
+  }
+}
+
+/* Franja roja con lunares grandes — afiches "Sueño de Navidad" */
+.bg-red-dots {
+  background-color: #E30613;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Crect width='80' height='80' fill='%23E30613'/%3E%3Ccircle cx='40' cy='40' r='18' fill='%239E000C' fill-opacity='0.35'/%3E%3Ccircle cx='0' cy='0' r='18' fill='%239E000C' fill-opacity='0.35'/%3E%3Ccircle cx='80' cy='0' r='18' fill='%239E000C' fill-opacity='0.35'/%3E%3Ccircle cx='0' cy='80' r='18' fill='%239E000C' fill-opacity='0.35'/%3E%3Ccircle cx='80' cy='80' r='18' fill='%239E000C' fill-opacity='0.35'/%3E%3C/svg%3E");
+  background-size: 80px 80px;
+  background-repeat: repeat;
+}
+
+@media (max-width: 640px) {
+  .bg-red-dots {
+    background-size: 56px 56px;
+  }
+}
+
+/* Cinta de caramelo rojo / blanco / verde */
+.candy-stripe {
+  background: repeating-linear-gradient(
+    135deg,
+    #E30613 0px,
+    #E30613 10px,
+    #ffffff 10px,
+    #ffffff 15px,
+    #0B8A3E 15px,
+    #0B8A3E 25px,
+    #ffffff 25px,
+    #ffffff 30px
+  );
+}
+
+/* ---------------------------------------------------------
+   TARJETA CON COSTURA NAVIDEÑA (inset, como en los afiches)
+   --------------------------------------------------------- */
+.stitched {
+  --stitch-radius: 1.75rem;
+  position: relative;
+  background: #ffffff;
+  border-radius: var(--stitch-radius);
+  padding: 6px;
+  box-shadow:
+    0 20px 45px -15px rgba(0, 0, 0, 0.45),
+    0 8px 16px -6px rgba(0, 0, 0, 0.25);
+}
+
+.stitched-ring {
+  border-radius: calc(var(--stitch-radius) - 6px);
+  padding: 3px;
+  height: 100%;
+  background: repeating-linear-gradient(
+    135deg,
+    #E30613 0px,
+    #E30613 7px,
+    transparent 7px,
+    transparent 11px,
+    #0B8A3E 11px,
+    #0B8A3E 18px,
+    transparent 18px,
+    transparent 22px
+  );
+}
+
+.stitched-body {
+  position: relative;
+  height: 100%;
+  background: #ffffff;
+  border-radius: calc(var(--stitch-radius) - 9px);
+}
+
+.stitched-sm {
+  --stitch-radius: 1rem;
+  padding: 4px;
+}
+
+.stitched-sm .stitched-ring {
+  border-radius: calc(var(--stitch-radius) - 4px);
+  padding: 2px;
+}
+
+.stitched-sm .stitched-body {
+  border-radius: calc(var(--stitch-radius) - 6px);
+}
+
+/* Remache metálico de etiqueta de regalo */
+.rivet {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 35% 30%, #ffffff 0 15%, #cbd5e1 30%, #64748b 100%);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  z-index: 2;
+}
+
+.rivet-green {
+  background: radial-gradient(circle at 35% 30%, #6ee7a0 0 15%, #0B8A3E 45%, #064d24 100%);
+}
+
+/* ---------------------------------------------------------
+   TIPOGRAFÍA Y CONTRASTE DE ALTO IMPACTO
+   --------------------------------------------------------- */
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+/* Texto blanco con sombra pronunciada para contraste impecable sobre rojo o verde */
+.text-pop {
+  color: #ffffff !important;
+  text-shadow:
+    0 3px 0 rgba(0, 0, 0, 0.35),
+    0 6px 16px rgba(0, 0, 0, 0.55);
+}
+
+.text-pop-sm {
+  color: #ffffff !important;
+  text-shadow:
+    0 2px 0 rgba(0, 0, 0, 0.3),
+    0 4px 10px rgba(0, 0, 0, 0.45);
+}
+
+/* Contorno blanco para el logo */
+.logo-outline {
+  filter:
+    drop-shadow(3px 0 0 #fff)
+    drop-shadow(-3px 0 0 #fff)
+    drop-shadow(0 3px 0 #fff)
+    drop-shadow(0 -3px 0 #fff)
+    drop-shadow(0 8px 14px rgba(0, 0, 0, 0.35));
+}
+
+/* Círculo verde "de" del lockup Sueño de Navidad */
+.de-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: #0B8A3E;
+  color: #fff;
+  border: 3px solid #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  font-family: var(--font-display);
+  line-height: 1;
+}
+
+/* ---------------------------------------------------------
+   ANIMACIONES
+   --------------------------------------------------------- */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.35; transform: scale(0.8) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1.1) rotate(45deg); }
+}
+
+.animate-twinkle {
+  animation: twinkle 3.2s ease-in-out infinite;
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(12deg); }
+}
+
+.animate-float-slow {
+  animation: float-slow 7s ease-in-out infinite;
+}
+
+@keyframes swing-tag {
+  0%, 100% { transform: rotate(-5deg); }
+  50% { transform: rotate(-2deg); }
+}
+
+.animate-swing-tag {
+  transform-origin: top center;
+  animation: swing-tag 4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-twinkle,
+  .animate-float-slow,
+  .animate-swing-tag {
+    animation: none;
+  }
 }

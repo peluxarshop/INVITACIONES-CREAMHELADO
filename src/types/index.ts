@@ -29,6 +29,8 @@ export interface EventConfig {
   primaryColor: string;
   secondaryColor: string;
   whatsappTemplate: string;
+  musicEnabled?: boolean;
+  musicUrl?: string;
 }
 
 export interface DashboardMetrics {

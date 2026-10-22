@@ -55,9 +55,9 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
 
   if (!mounted) {
     return (
-      <div className="grid grid-cols-4 gap-2.5 sm:gap-4 max-w-md mx-auto py-2 animate-pulse">
+      <div className="grid grid-cols-4 gap-2 sm:gap-4 max-w-lg mx-auto py-2 animate-pulse">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="h-20 bg-slate-100 rounded-2xl border border-slate-200" />
+          <div key={i} className="h-24 sm:h-28 bg-white/30 rounded-2xl" />
         ))}
       </div>
     );
@@ -65,33 +65,38 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
 
   if (timeLeft.isPast) {
     return (
-      <div className="text-center py-4 px-6 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 font-bold text-base max-w-md mx-auto shadow-sm">
-        🎉 ¡El evento ya ha comenzado! ¡A disfrutar la gran fiesta!
+      <div className="stitched max-w-md mx-auto">
+        <div className="stitched-ring">
+          <div className="stitched-body py-4 px-6 text-center font-display text-crem-red text-xl sm:text-2xl">
+            ¡El evento ya comenzó! ¡A disfrutar la gran fiesta!
+          </div>
+        </div>
       </div>
     );
   }
 
   const units = [
-    { label: 'DÍAS', value: timeLeft.days },
-    { label: 'HORAS', value: timeLeft.hours },
-    { label: 'MINUTOS', value: timeLeft.minutes },
-    { label: 'SEGUNDOS', value: timeLeft.seconds },
+    { label: 'Días', value: timeLeft.days },
+    { label: 'Horas', value: timeLeft.hours },
+    { label: 'Min', value: timeLeft.minutes },
+    { label: 'Seg', value: timeLeft.seconds },
   ];
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      <div className="grid grid-cols-4 gap-2.5 sm:gap-3.5 text-center">
+    <div className="w-full max-w-lg mx-auto">
+      <div className="grid grid-cols-4 gap-2 sm:gap-4 text-center">
         {units.map((unit, index) => (
-          <div
-            key={index}
-            className="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-white border border-[#ebd9c8] shadow-sm hover:border-[#E30613]/50 transition-all duration-300"
-          >
-            <span className="text-2xl sm:text-4xl font-extrabold text-[#E30613] font-mono tracking-tight">
-              {String(unit.value).padStart(2, '0')}
-            </span>
-            <span className="text-[10px] sm:text-xs tracking-wider font-bold text-slate-500 mt-1 uppercase">
-              {unit.label}
-            </span>
+          <div key={index} className="stitched stitched-sm group">
+            <div className="stitched-ring">
+              <div className="stitched-body flex flex-col items-center justify-center py-3 sm:py-4">
+                <span className="font-display text-[clamp(2rem,8vw,3.5rem)] leading-none text-crem-red tabular-nums group-hover:scale-110 transition-transform">
+                  {String(unit.value).padStart(2, '0')}
+                </span>
+                <span className="font-display text-[11px] sm:text-sm uppercase tracking-wider text-crem-green mt-1">
+                  {unit.label}
+                </span>
+              </div>
+            </div>
           </div>
         ))}
       </div>

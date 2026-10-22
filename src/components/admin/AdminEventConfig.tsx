@@ -12,6 +12,7 @@ import {
   faBuilding,
   faImage,
   faShirt,
+  faMusic,
 } from '@fortawesome/free-solid-svg-icons';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { EventConfig } from '@/types';
@@ -357,6 +358,43 @@ export const AdminEventConfig: React.FC<AdminEventConfigProps> = ({
             onChange={(e) => handleChange('whatsappTemplate', e.target.value)}
             className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs sm:text-sm focus:outline-none focus:border-[#E30613] focus:bg-white leading-relaxed"
           />
+        </div>
+      </div>
+
+      {/* 5. Música Navideña de Fondo para Invitaciones */}
+      <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+        <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center justify-between border-b border-slate-100 pb-3">
+          <div className="flex items-center gap-2">
+            <FontAwesomeIcon icon={faMusic} className="text-[#E30613]" />
+            <span>Música Navideña de Fondo (Invitaciones)</span>
+          </div>
+          <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+            Libre de derechos de autor (CC-BY)
+          </span>
+        </h3>
+
+        <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <p className="text-xs sm:text-sm font-bold text-slate-800">
+              Activar música ambiental suave en la página de invitación
+            </p>
+            <p className="text-xs text-slate-500 mt-0.5 max-w-lg leading-relaxed">
+              Reproduce una cálida melodía de Navidad instrumental (Jingle Bells Calm en celesta y violín) a volumen suave, con botón flotante para que el invitado pueda pausarla o silenciarla en cualquier momento.
+            </p>
+          </div>
+
+          <label className="relative inline-flex items-center cursor-pointer select-none shrink-0">
+            <input
+              type="checkbox"
+              checked={config.musicEnabled ?? true}
+              onChange={(e) => setConfig((prev) => ({ ...prev, musicEnabled: e.target.checked }))}
+              className="sr-only peer"
+            />
+            <div className="w-12 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-crem-green"></div>
+            <span className="ml-3 text-xs font-bold text-slate-700 min-w-16">
+              {config.musicEnabled ?? true ? 'Activada 🎵' : 'Silenciada 🔇'}
+            </span>
+          </label>
         </div>
       </div>
 

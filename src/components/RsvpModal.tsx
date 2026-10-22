@@ -13,6 +13,7 @@ import {
   faExclamationCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { Guest } from '@/types';
+import { StitchedCard } from '@/components/festive/Festive';
 
 interface RsvpModalProps {
   isOpen: boolean;
@@ -45,7 +46,7 @@ export const RsvpModal: React.FC<RsvpModalProps> = ({
   const launchCelebrationConfetti = () => {
     try {
       const end = Date.now() + 2.5 * 1000;
-      const colors = ['#E30613', '#FFB800', '#005CA9', '#10b981', '#f43f5e'];
+      const colors = ['#E30613', '#0B8A3E', '#FFFFFF', '#F2C94C'];
 
       (function frame() {
         confetti({
@@ -115,159 +116,162 @@ export const RsvpModal: React.FC<RsvpModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg bg-white border border-slate-200 rounded-3xl shadow-2xl p-6 sm:p-8 overflow-hidden text-slate-800">
-        {/* Barra superior de acento */}
-        <div
-          className={`absolute top-0 left-0 right-0 h-2 ${
-            type === 'confirm' ? 'bg-[#E30613]' : 'bg-slate-400'
-          }`}
-        />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="w-full max-w-lg">
+        <StitchedCard bodyClassName="overflow-hidden">
+          <div className="h-3 w-full candy-stripe" aria-hidden="true" />
 
-        {type === 'confirm' ? (
-          <div>
-            <div className="flex items-center gap-3 mb-5">
-              <div className="w-12 h-12 rounded-2xl bg-red-50 text-[#E30613] flex items-center justify-center text-xl shrink-0">
-                <FontAwesomeIcon icon={faCheckCircle} />
-              </div>
+          <div className="p-6 sm:p-8">
+            {type === 'confirm' ? (
               <div>
-                <h3 className="text-xl font-black text-slate-900">¡Genial que nos acompañes!</h3>
-                <p className="text-xs text-slate-500">
-                  Ingresa tus datos para generar tu pase de acceso oficial
-                </p>
-              </div>
-            </div>
+                <div className="flex items-center gap-3.5 mb-5">
+                  <div className="w-12 h-12 rounded-2xl bg-crem-red text-white flex items-center justify-center text-xl shrink-0 shadow-md">
+                    <FontAwesomeIcon icon={faCheckCircle} />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-slate-900 text-2xl sm:text-3xl leading-none">
+                      ¡Genial que nos acompañes!
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-1">
+                      Ingresa tus datos para generar tu pase oficial
+                    </p>
+                  </div>
+                </div>
 
-            {error && (
-              <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
-                <FontAwesomeIcon icon={faExclamationCircle} />
-                <span>{error}</span>
+                {error && (
+                  <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-crem-red text-xs font-bold flex items-center gap-2">
+                    <FontAwesomeIcon icon={faExclamationCircle} />
+                    <span>{error}</span>
+                  </div>
+                )}
+
+                <form onSubmit={handleConfirmSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-2">
+                      <FontAwesomeIcon icon={faUser} className="text-crem-red text-xs" />
+                      <span>Nombre Completo *</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-crem-green focus:bg-white text-sm transition-all"
+                      placeholder="Ej: Juan David Pérez Gómez"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-2">
+                      <FontAwesomeIcon icon={faIdCard} className="text-crem-red text-xs" />
+                      <span>Número de Cédula / Documento *</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={cedula}
+                      onChange={(e) => setCedula(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-crem-green focus:bg-white text-sm transition-all"
+                      placeholder="Ej: 1020304050"
+                    />
+                    <span className="text-[11px] text-slate-500 mt-1 block">
+                      Requerido para control de seguridad en portería y rifas.
+                    </span>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-2">
+                      <FontAwesomeIcon icon={faEnvelope} className="text-crem-green text-xs" />
+                      <span>Correo Electrónico (para enviarte tu pase)</span>
+                    </label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-crem-green focus:bg-white text-sm transition-all"
+                      placeholder="juan.perez@cremhelado.com.co"
+                    />
+                  </div>
+
+                  <div className="pt-2 flex items-center justify-end gap-3">
+                    <button
+                      type="button"
+                      onClick={onClose}
+                      disabled={loading}
+                      className="px-4 py-2.5 rounded-full text-slate-500 hover:text-slate-800 hover:bg-slate-100 text-xs font-bold transition-colors cursor-pointer"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-crem-red hover:bg-crem-red-dark text-white font-display text-base tracking-wide shadow-[0_4px_0_#8E0A12] hover:translate-y-0.5 active:translate-y-1 transition-all disabled:opacity-50 cursor-pointer"
+                    >
+                      <FontAwesomeIcon icon={faCheckCircle} />
+                      <span>{loading ? 'Confirmando...' : '¡Confirmar Asistencia!'}</span>
+                    </button>
+                  </div>
+                </form>
+              </div>
+            ) : (
+              <div>
+                <div className="flex items-center gap-3.5 mb-4">
+                  <div className="w-12 h-12 rounded-2xl bg-red-50 text-crem-red flex items-center justify-center text-xl shrink-0">
+                    <FontAwesomeIcon icon={faHeart} />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-slate-900 text-2xl sm:text-3xl leading-none">
+                      Te extrañaremos en la fiesta
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-1">
+                      Agradecemos que nos avises para coordinar el catering
+                    </p>
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-[#FAF6EE] border border-[#e5d8c3] text-xs text-slate-700 mb-5 leading-relaxed">
+                  Sabemos que a veces se presentan compromisos y viajes imprevistos. Desde ya,{' '}
+                  <strong className="text-slate-900">{companyName}</strong> te agradece inmensamente por toda
+                  tu entrega, pasión y esfuerzo en este gran año.
+                </div>
+
+                <form onSubmit={handleDeclineSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                      ¿Deseas dejarnos un mensaje o motivo? (Opcional)
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={reason}
+                      onChange={(e) => setReason(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border-2 border-slate-200 text-slate-900 text-xs focus:outline-none focus:border-slate-400 focus:bg-white"
+                      placeholder="Ej: Compromiso familiar fuera de la ciudad..."
+                    />
+                  </div>
+
+                  <div className="pt-2 flex items-center justify-end gap-3">
+                    <button
+                      type="button"
+                      onClick={onClose}
+                      disabled={loading}
+                      className="px-4 py-2.5 rounded-full text-slate-500 hover:text-slate-800 text-xs font-bold cursor-pointer"
+                    >
+                      Regresar
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-slate-800 hover:bg-slate-700 text-white font-display text-sm tracking-wide transition-colors disabled:opacity-50 cursor-pointer"
+                    >
+                      <FontAwesomeIcon icon={faTimesCircle} />
+                      <span>{loading ? 'Guardando...' : 'Confirmar no asistencia'}</span>
+                    </button>
+                  </div>
+                </form>
               </div>
             )}
-
-            <form onSubmit={handleConfirmSubmit} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-2">
-                  <FontAwesomeIcon icon={faUser} className="text-[#E30613] text-xs" />
-                  <span>Nombre Completo *</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#E30613] focus:bg-white text-sm transition-all"
-                  placeholder="Ej: Juan David Pérez Gómez"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-2">
-                  <FontAwesomeIcon icon={faIdCard} className="text-[#E30613] text-xs" />
-                  <span>Número de Cédula / Documento *</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={cedula}
-                  onChange={(e) => setCedula(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#E30613] focus:bg-white text-sm transition-all"
-                  placeholder="Ej: 1020304050"
-                />
-                <span className="text-[11px] text-slate-500 mt-1 block">
-                  Requerido para control de seguridad en portería y rifas.
-                </span>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-2">
-                  <FontAwesomeIcon icon={faEnvelope} className="text-[#E30613] text-xs" />
-                  <span>Correo Electrónico (para enviarte tu pase)</span>
-                </label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#E30613] focus:bg-white text-sm transition-all"
-                  placeholder="juan.perez@cremhelado.com.co"
-                />
-              </div>
-
-              <div className="pt-2 flex items-center justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  disabled={loading}
-                  className="px-4 py-2.5 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 text-xs font-bold transition-colors"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#E30613] hover:bg-[#c40510] text-white font-black text-sm shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
-                >
-                  <FontAwesomeIcon icon={faCheckCircle} />
-                  <span>{loading ? 'Confirmando...' : '¡Confirmar mi Asistencia!'}</span>
-                </button>
-              </div>
-            </form>
           </div>
-        ) : (
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center text-xl shrink-0">
-                <FontAwesomeIcon icon={faHeart} className="text-[#E30613]" />
-              </div>
-              <div>
-                <h3 className="text-xl font-black text-slate-900">Te extrañaremos en la fiesta</h3>
-                <p className="text-xs text-slate-500">
-                  Agradecemos que nos avises para coordinar el catering del evento
-                </p>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-700 mb-5 leading-relaxed">
-              Sabemos que a veces se presentan compromisos y viajes imprevistos. Desde ya,{' '}
-              <strong className="text-slate-900">{companyName}</strong> te agradece inmensamente por toda
-              tu entrega, pasión y esfuerzo en este gran año.
-            </div>
-
-            <form onSubmit={handleDeclineSubmit} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  ¿Deseas dejarnos un mensaje o motivo? (Opcional)
-                </label>
-                <textarea
-                  rows={2}
-                  value={reason}
-                  onChange={(e) => setReason(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-slate-400 focus:bg-white"
-                  placeholder="Ej: Compromiso familiar fuera de la ciudad..."
-                />
-              </div>
-
-              <div className="pt-2 flex items-center justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  disabled={loading}
-                  className="px-4 py-2.5 rounded-xl text-slate-500 hover:text-slate-800 text-xs font-bold"
-                >
-                  Regresar
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition-colors disabled:opacity-50"
-                >
-                  <FontAwesomeIcon icon={faTimesCircle} />
-                  <span>{loading ? 'Guardando...' : 'Confirmar que no podré ir'}</span>
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
+        </StitchedCard>
       </div>
     </div>
   );
