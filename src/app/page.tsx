@@ -71,9 +71,9 @@ export default function Home() {
 
         {/* Copos, destellos y heladitos en primer plano (POR ENCIMA de la cinta roja) */}
         <div className="pointer-events-none absolute inset-0 z-20 overflow-hidden" aria-hidden="true">
-          {/* Copo grande superior izquierdo */}
+          {/* Copo grande superior izquierdo: solo en pantallas medianas/grandes para proteger el logo en móvil */}
           <Snowflake
-            className="absolute text-white w-20 sm:w-32 top-[4%] left-[2%] sm:left-[4%] drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)] animate-float-slow"
+            className="absolute text-white w-20 sm:w-32 top-[4%] left-[2%] sm:left-[4%] drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)] animate-float-slow hidden md:block"
           />
           {/* Copo cristalino superior derecho */}
           <SnowflakeCrystal

@@ -220,9 +220,13 @@ export const InvitationClient: React.FC<InvitationClientProps> = ({ guestId }) =
 
         {/* Capa de copos, destellos y heladitos en primer plano (POR ENCIMA de la cinta roja) */}
         <div className="pointer-events-none absolute inset-0 z-20 overflow-hidden" aria-hidden="true">
-          {/* Copo grande superior izquierdo por encima de la cinta */}
+          {/* Copo grande superior izquierdo: solo en pantallas medianas/grandes para proteger 100% el logo en móvil */}
           <Snowflake
-            className="absolute text-white w-20 sm:w-28 top-[4%] left-[2%] sm:left-[4%] drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)] animate-float-slow"
+            className="absolute text-white w-20 sm:w-28 top-[4%] left-[2%] sm:left-[4%] drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)] animate-float-slow hidden md:block"
+          />
+          {/* Copo central sutil para móvil en espacio libre entre logo y etiqueta */}
+          <SnowflakeCrystal
+            className="absolute text-white/80 w-7 h-7 top-[3%] left-[44%] drop-shadow animate-twinkle md:hidden"
           />
           {/* Copo cristalino superior */}
           <SnowflakeCrystal

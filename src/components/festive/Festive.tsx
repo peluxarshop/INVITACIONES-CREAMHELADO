@@ -256,8 +256,8 @@ export const CopaHeladoVector: React.FC<{ className?: string; style?: React.CSSP
  */
 export const FestiveScatteredDecor: React.FC<{ className?: string }> = ({ className = '' }) => (
   <div className={`pointer-events-none absolute inset-0 overflow-hidden select-none ${className}`} aria-hidden="true">
-    {/* --- Lateral Izquierdo Superior --- */}
-    <div className="absolute top-[6%] left-[2%] sm:left-[4%] opacity-85 hover:opacity-100 transition-opacity animate-float-slow -rotate-12">
+    {/* --- Lateral Izquierdo Superior (solo desktop para proteger la zona del logo en móvil) --- */}
+    <div className="absolute top-[6%] left-[2%] sm:left-[4%] opacity-85 hover:opacity-100 transition-opacity animate-float-slow -rotate-12 hidden md:block">
       <ChococonoVector className="w-12 h-16 sm:w-16 sm:h-24 drop-shadow-[0_8px_16px_rgba(0,0,0,0.45)]" />
     </div>
     <div className="absolute top-[16%] left-[3%] sm:left-[7%] text-white/80 animate-twinkle">
@@ -370,7 +370,7 @@ export const LogoOutlined: React.FC<{ className?: string; priority?: boolean }> 
   className = 'w-32 h-20',
   priority = true,
 }) => (
-  <div className={`relative ${className}`}>
+  <div className={`relative z-30 ${className}`}>
     <Image
       src="/logo-cremhelado.png"
       alt="Crem Helado"
