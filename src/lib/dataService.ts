@@ -65,6 +65,23 @@ function saveLocalGuests(guests: Guest[]): void {
 // ==========================================
 
 export async function fetchEventConfig(): Promise<EventConfig> {
+  // 1. En el navegador, consultar la API central del servidor (/api/config)
+  if (typeof window !== 'undefined') {
+    try {
+      const res = await fetch('/api/config', { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.config) {
+          saveLocalConfig(data.config);
+          return data.config;
+        }
+      }
+    } catch (err) {
+      console.warn('Fallo consultando /api/config, usando fallback local/Supabase:', err);
+    }
+  }
+
+  // 2. Intentar Supabase directamente si está configurado en el cliente
   if (isSupabaseConfigured && supabase) {
     try {
       const { data, error } = await supabase
@@ -104,8 +121,30 @@ export async function fetchEventConfig(): Promise<EventConfig> {
 
 export async function saveEventConfig(config: EventConfig): Promise<EventConfig> {
   config.dressCode = sanitizeDressCode(config.dressCode);
+
+  // 1. Enviar a la API central del servidor (/api/config)
+  if (typeof window !== 'undefined') {
+    try {
+      const res = await fetch('/api/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ config }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.config) {
+          config = data.config;
+        }
+      }
+    } catch (err) {
+      console.warn('Fallo guardando en /api/config:', err);
+    }
+  }
+
+  // 2. Guardar en caché local
   saveLocalConfig(config);
 
+  // 3. Guardar en Supabase si está disponible
   if (isSupabaseConfigured && supabase) {
     try {
       const payload: Record<string, unknown> = {

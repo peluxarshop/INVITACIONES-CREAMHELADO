@@ -1,13 +1,16 @@
 import fs from 'fs';
 import path from 'path';
-import { Guest, GuestStatus } from '@/types';
+import { Guest, GuestStatus, EventConfig } from '@/types';
 import defaultGuests from '@/data/guests.json';
+import defaultEventConfig from '@/data/event-config.json';
 import { supabase, isSupabaseConfigured } from './supabase';
 
 const DATA_FILE_PATH = path.join(process.cwd(), 'src', 'data', 'guests.json');
+const CONFIG_FILE_PATH = path.join(process.cwd(), 'src', 'data', 'event-config.json');
 
 // Memoria caché para entornos serverless y sincronización rápida
 let memoryGuests: Guest[] = [...(defaultGuests as Guest[])];
+let memoryConfig: EventConfig = { ...(defaultEventConfig as EventConfig) };
 
 function loadFromFile(): Guest[] {
   try {
@@ -294,4 +297,109 @@ export async function serverDeleteGuest(id: string): Promise<boolean> {
   }
 
   return true;
+}
+
+function loadConfigFromFile(): EventConfig {
+  try {
+    if (fs.existsSync(CONFIG_FILE_PATH)) {
+      const content = fs.readFileSync(CONFIG_FILE_PATH, 'utf-8');
+      const parsed = JSON.parse(content);
+      if (parsed && typeof parsed === 'object') {
+        memoryConfig = { ...memoryConfig, ...parsed };
+        return memoryConfig;
+      }
+    }
+  } catch (err) {
+    console.warn('No se pudo leer src/data/event-config.json desde el disco, usando memoria:', err);
+  }
+  return memoryConfig;
+}
+
+function saveConfigToFile(config: EventConfig): void {
+  memoryConfig = config;
+  try {
+    if (fs.existsSync(path.dirname(CONFIG_FILE_PATH))) {
+      fs.writeFileSync(CONFIG_FILE_PATH, JSON.stringify(config, null, 2), 'utf-8');
+    }
+  } catch (err) {
+    console.warn('No se pudo escribir en src/data/event-config.json:', err);
+  }
+}
+
+export async function serverGetEventConfig(): Promise<EventConfig> {
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('event_config')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (!error && data) {
+        const mapped: EventConfig = {
+          id: data.id,
+          eventName: data.event_name || memoryConfig.eventName,
+          companyName: data.company_name || memoryConfig.companyName,
+          eventDate: data.event_date || memoryConfig.eventDate,
+          eventTime: (data.event_time || memoryConfig.eventTime).slice(0, 5),
+          locationName: data.location_name || memoryConfig.locationName,
+          locationAddress: data.location_address || memoryConfig.locationAddress,
+          mapsUrl: data.maps_url || memoryConfig.mapsUrl,
+          dressCode: data.dress_code || memoryConfig.dressCode,
+          motivationalMessage: data.motivational_message || memoryConfig.motivationalMessage,
+          logoUrl: data.logo_url || memoryConfig.logoUrl,
+          primaryColor: data.primary_color || memoryConfig.primaryColor,
+          secondaryColor: data.secondary_color || memoryConfig.secondaryColor,
+          whatsappTemplate: data.whatsapp_template || memoryConfig.whatsappTemplate,
+          musicEnabled: data.music_enabled !== undefined ? data.music_enabled : (memoryConfig.musicEnabled ?? true),
+          musicUrl: data.music_url || memoryConfig.musicUrl || '/audio/navidad-suave.mp3',
+        };
+        saveConfigToFile(mapped);
+        return mapped;
+      }
+    } catch (err) {
+      console.warn('Error leyendo event_config en Supabase:', err);
+    }
+  }
+
+  return loadConfigFromFile();
+}
+
+export async function serverSaveEventConfig(config: EventConfig): Promise<EventConfig> {
+  saveConfigToFile(config);
+
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const payload: Record<string, unknown> = {
+        event_name: config.eventName,
+        company_name: config.companyName,
+        event_date: config.eventDate,
+        event_time: config.eventTime,
+        location_name: config.locationName,
+        location_address: config.locationAddress,
+        maps_url: config.mapsUrl,
+        dress_code: config.dressCode,
+        motivational_message: config.motivationalMessage,
+        logo_url: config.logoUrl,
+        primary_color: config.primaryColor,
+        secondary_color: config.secondaryColor,
+        whatsapp_template: config.whatsappTemplate,
+        music_enabled: config.musicEnabled ?? true,
+        music_url: config.musicUrl || '/audio/navidad-suave.mp3',
+        updated_at: new Date().toISOString(),
+      };
+
+      if (config.id) {
+        await supabase.from('event_config').update(payload).eq('id', config.id);
+      } else {
+        const { data } = await supabase.from('event_config').insert([payload]).select().single();
+        if (data) config.id = data.id;
+      }
+    } catch (err) {
+      console.warn('Error guardando event_config en Supabase:', err);
+    }
+  }
+
+  return config;
 }
