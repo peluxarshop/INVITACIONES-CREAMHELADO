@@ -128,7 +128,7 @@ export default function Home() {
             <div className="relative">
               <SuenoLockup size="lg" />
               <p className="font-display text-pop-sm text-center text-lg sm:text-2xl md:text-3xl mt-4 sm:mt-5 max-w-2xl mx-auto leading-tight">
-                La gran gala de la familia Crem Helado
+                La gran fiesta de la familia Crem Helado
               </p>
             </div>
           </div>

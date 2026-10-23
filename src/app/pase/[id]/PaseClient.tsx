@@ -176,7 +176,7 @@ export const PaseClient: React.FC<PaseClientProps> = ({ guestId }) => {
 
               <p className="text-xs text-white/95 font-medium mt-2 max-w-xs mx-auto">
                 {isConfirmed
-                  ? 'Acceso habilitado para 1 colaborador + Cena de Gala + Rifas de Fin de Año'
+                  ? 'Acceso personal habilitado para 1 colaborador'
                   : isDeclined
                   ? 'El colaborador indicó previamente que no podría asistir'
                   : 'Este invitado aún no ha confirmado formalmente su asistencia'}
@@ -207,18 +207,6 @@ export const PaseClient: React.FC<PaseClientProps> = ({ guestId }) => {
                     Confirmado el: {new Date(guest.confirmedAt).toLocaleString('es-CO')}
                   </div>
                 )}
-              </div>
-
-              {/* Beneficios Incluidos */}
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="p-3 rounded-xl bg-red-50 border border-red-200 flex items-center gap-2.5 text-slate-900 font-bold">
-                  <FontAwesomeIcon icon={faUtensils} className="text-crem-red text-sm" />
-                  <span>Cena de Gala</span>
-                </div>
-                <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 flex items-center gap-2.5 text-slate-900 font-bold">
-                  <FontAwesomeIcon icon={faGift} className="text-amber-600 text-sm" />
-                  <span>Boleta Rifas</span>
-                </div>
               </div>
 
               {/* Detalles del Evento */}

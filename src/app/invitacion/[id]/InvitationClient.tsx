@@ -498,7 +498,7 @@ export const InvitationClient: React.FC<InvitationClientProps> = ({
                 ¿Nos acompañarás a <span className="text-crem-red">celebrar</span>?
               </h3>
               <p className="text-sm sm:text-base text-slate-600 max-w-md mx-auto mt-3 mb-7">
-                Confirma antes del evento para asegurar tu cena de gala, la estación de helados y tu participación en las rifas.
+                Confirma tu asistencia con anticipación para asegurar tu cupo y generar tu pase digital de acceso.
               </p>
 
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-4">

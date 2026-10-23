@@ -91,7 +91,7 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({ onLoginSuccess }
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#E30613] focus:bg-white text-sm transition-all"
-              placeholder="Ingresa tu usuario (ej: admin)"
+              placeholder="Ingresa tu usuario"
             />
           </div>
 
@@ -122,14 +122,6 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({ onLoginSuccess }
             </button>
           </div>
         </form>
-
-        <div className="mt-6 pt-5 border-t border-slate-100 text-center">
-          <p className="text-[11px] text-slate-400">
-            Credenciales iniciales por defecto configurables en tu archivo de entorno:
-            <br />
-            <strong className="text-slate-600">Usuario:</strong> admin | <strong className="text-slate-600">Clave:</strong> cremhelado2026
-          </p>
-        </div>
       </div>
     </div>
   );

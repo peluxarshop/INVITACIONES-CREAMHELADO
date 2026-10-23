@@ -29,6 +29,7 @@ export const AdminEventConfig: React.FC<AdminEventConfigProps> = ({
   const [config, setConfig] = useState<EventConfig>(initialConfig);
   const [isSaving, setIsSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const handleChange = (field: keyof EventConfig, value: string) => {
     setConfig((prev) => ({ ...prev, [field]: value }));
@@ -52,9 +53,10 @@ export const AdminEventConfig: React.FC<AdminEventConfigProps> = ({
       setIsSaving(true);
       await onSaveConfig(config);
       setSavedSuccess(true);
-      setTimeout(() => setSavedSuccess(false), 4000);
-    } catch {
-      alert('Error guardando la configuración');
+      setShowSuccessModal(true);
+      setTimeout(() => setSavedSuccess(false), 5000);
+    } catch (err: any) {
+      alert(`Error al guardar la configuración: ${err?.message || 'Error en el servidor'}`);
     } finally {
       setIsSaving(false);
     }
@@ -68,13 +70,40 @@ export const AdminEventConfig: React.FC<AdminEventConfigProps> = ({
   ];
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {savedSuccess && (
-        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-bold flex items-center gap-2">
-          <FontAwesomeIcon icon={faCheckCircle} className="text-emerald-600" />
-          <span>¡Configuración del evento y marca guardada exitosamente!</span>
+    <>
+      {/* Modal Popup de Confirmación */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-emerald-100 text-center space-y-4">
+            <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto text-3xl shadow-inner">
+              <FontAwesomeIcon icon={faCheckCircle} />
+            </div>
+            <h3 className="text-xl font-black text-slate-900 tracking-tight">
+              ¡Información Actualizada!
+            </h3>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              La información de la <strong>empresa, lugar del evento, fecha, hora, mensaje de bienvenida y música</strong> ha sido guardada y sincronizada correctamente en la base de datos.
+            </p>
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => setShowSuccessModal(false)}
+                className="w-full py-3 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md transition-all cursor-pointer"
+              >
+                Entendido
+              </button>
+            </div>
+          </div>
         </div>
       )}
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {savedSuccess && (
+          <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-bold flex items-center gap-2">
+            <FontAwesomeIcon icon={faCheckCircle} className="text-emerald-600" />
+            <span>¡Configuración del evento y lugar guardada exitosamente!</span>
+          </div>
+        )}
 
       {/* 1. Información General del Evento */}
       <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
@@ -398,17 +427,27 @@ export const AdminEventConfig: React.FC<AdminEventConfigProps> = ({
         </div>
       </div>
 
-      {/* Botón Guardar */}
-      <div className="flex items-center justify-end">
+      {/* Botón Guardar y aviso de confirmación */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+        {savedSuccess ? (
+          <div className="inline-flex items-center gap-2 text-xs font-bold text-emerald-700 bg-emerald-50 px-4 py-2.5 rounded-xl border border-emerald-200 animate-fade-in">
+            <FontAwesomeIcon icon={faCheckCircle} className="text-emerald-600" />
+            <span>¡Información del evento y lugar actualizada con éxito!</span>
+          </div>
+        ) : (
+          <div />
+        )}
+
         <button
           type="submit"
           disabled={isSaving}
-          className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-[#E30613] hover:bg-[#c40510] text-white font-black text-sm shadow-md hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer disabled:opacity-50"
+          className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-[#E30613] hover:bg-[#c40510] text-white font-black text-sm shadow-md hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer disabled:opacity-50 ml-auto"
         >
           <FontAwesomeIcon icon={faSave} />
           <span>{isSaving ? 'Guardando Cambios...' : 'Guardar Toda la Configuración'}</span>
         </button>
       </div>
     </form>
+    </>
   );
 };

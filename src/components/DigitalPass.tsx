@@ -125,22 +125,6 @@ export const DigitalPass: React.FC<DigitalPassProps> = ({ guest, config }) => {
             )}
           </div>
 
-          {/* Beneficios Incluidos */}
-          <div className="grid grid-cols-2 gap-2.5 text-xs mb-5">
-            <div className="p-3 rounded-xl bg-red-50 border border-red-200 flex items-center gap-2 text-slate-900 font-bold">
-              <div className="w-7 h-7 rounded-lg bg-crem-red text-white flex items-center justify-center shrink-0">
-                <FontAwesomeIcon icon={faUtensils} className="text-xs" />
-              </div>
-              <span>Cena de Gala</span>
-            </div>
-            <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 flex items-center gap-2 text-slate-900 font-bold">
-              <div className="w-7 h-7 rounded-lg bg-amber-600 text-white flex items-center justify-center shrink-0">
-                <FontAwesomeIcon icon={faGift} className="text-xs" />
-              </div>
-              <span>Rifas & Premios</span>
-            </div>
-          </div>
-
           {/* Detalles del Evento */}
           <div className="space-y-3 text-xs sm:text-sm text-slate-700 mb-6 text-left">
             <div className="flex items-start gap-3">

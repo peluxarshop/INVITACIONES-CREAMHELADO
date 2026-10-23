@@ -405,13 +405,22 @@ export async function serverSaveEventConfig(config: EventConfig): Promise<EventC
       };
 
       if (config.id) {
-        await supabase.from('event_config').update(payload).eq('id', config.id);
+        const { error } = await supabase.from('event_config').update(payload).eq('id', config.id);
+        if (error) {
+          console.error('❌ Error actualizando event_config en Supabase:', error);
+          throw new Error(`Error en Supabase: ${error.message}`);
+        }
       } else {
-        const { data } = await supabase.from('event_config').insert([payload]).select().single();
+        const { data, error } = await supabase.from('event_config').insert([payload]).select().single();
+        if (error) {
+          console.error('❌ Error insertando event_config en Supabase:', error);
+          throw new Error(`Error en Supabase: ${error.message}`);
+        }
         if (data) config.id = data.id;
       }
-    } catch (err) {
-      console.warn('Error guardando event_config en Supabase:', err);
+    } catch (err: any) {
+      console.warn('Error guardando event_config en Supabase:', err?.message || err);
+      throw err;
     }
   }
 

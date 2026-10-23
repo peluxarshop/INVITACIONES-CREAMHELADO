@@ -182,7 +182,7 @@ export const RsvpModal: React.FC<RsvpModalProps> = ({
                       placeholder="Ej: 1020304050"
                     />
                     <span className="text-[11px] text-slate-500 mt-1 block">
-                      Requerido para control de seguridad en portería y rifas.
+                      Requerido para control de acceso y seguridad en portería.
                     </span>
                   </div>
 

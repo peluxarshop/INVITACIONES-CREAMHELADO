@@ -131,52 +131,21 @@ export async function saveEventConfig(config: EventConfig): Promise<EventConfig>
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ config }),
       });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.success && data.config) {
-          config = data.config;
-        }
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data?.error || 'Error al guardar la configuración en el servidor');
       }
-    } catch (err) {
-      console.warn('Fallo guardando en /api/config:', err);
+      if (data.config) {
+        config = data.config;
+      }
+    } catch (err: any) {
+      console.error('Fallo guardando en /api/config:', err);
+      throw err;
     }
   }
 
   // 2. Guardar en caché local
   saveLocalConfig(config);
-
-  // 3. Guardar en Supabase si está disponible
-  if (isSupabaseConfigured && supabase) {
-    try {
-      const payload: Record<string, unknown> = {
-        event_name: config.eventName,
-        company_name: config.companyName,
-        event_date: config.eventDate,
-        event_time: config.eventTime,
-        location_name: config.locationName,
-        location_address: config.locationAddress,
-        maps_url: config.mapsUrl,
-        dress_code: config.dressCode,
-        motivational_message: config.motivationalMessage,
-        logo_url: config.logoUrl,
-        primary_color: config.primaryColor,
-        secondary_color: config.secondaryColor,
-        whatsapp_template: config.whatsappTemplate,
-        music_enabled: config.musicEnabled ?? true,
-        music_url: config.musicUrl || '/audio/navidad-suave.mp3',
-        updated_at: new Date().toISOString(),
-      };
-
-      if (config.id) {
-        await supabase.from('event_config').update(payload).eq('id', config.id);
-      } else {
-        const { data } = await supabase.from('event_config').insert([payload]).select().single();
-        if (data) config.id = data.id;
-      }
-    } catch (e) {
-      console.warn('Error guardando en Supabase:', e);
-    }
-  }
 
   return config;
 }
