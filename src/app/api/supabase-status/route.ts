@@ -25,44 +25,74 @@ export async function GET() {
   }
 
   try {
-    // 1. Probar tabla event_config
+    // 1. Probar SELECT en event_config
     const { data: configData, error: configError } = await supabase
       .from('event_config')
       .select('*')
       .limit(1);
 
-    // 2. Probar tabla guests
+    // 2. Probar SELECT en guests
     const { data: guestsData, error: guestsError, count: guestsCount } = await supabase
       .from('guests')
       .select('*', { count: 'exact' });
 
-    if (configError || guestsError) {
-      return NextResponse.json({
-        status: 'supabase_error',
-        message: 'Supabase respondió con error.',
-        configError: configError ? {
-          message: configError.message,
-          hint: (configError as any).hint,
-          details: configError.details,
-          code: configError.code,
-        } : null,
-        guestsError: guestsError ? {
-          message: guestsError.message,
-          hint: (guestsError as any).hint,
-          details: guestsError.details,
-          code: guestsError.code,
-        } : null,
-        diagnostics,
-      }, { status: 502 });
+    // 3. Probar INSERT en guests (para verificar permisos de escritura / RLS)
+    const testGuest = {
+      full_name: 'Test Diagnosis Conexión',
+      first_name: 'Test',
+      last_name: 'Diagnosis',
+      phone: '573000000000',
+      email: 'test@diagnostico.com',
+      status: 'pending',
+    };
+
+    const { data: insertData, error: insertError } = await supabase
+      .from('guests')
+      .insert([testGuest])
+      .select()
+      .maybeSingle();
+
+    let insertTestResult: Record<string, unknown> = {
+      success: !insertError && Boolean(insertData),
+    };
+
+    if (insertError) {
+      insertTestResult = {
+        success: false,
+        error: {
+          message: insertError.message,
+          code: insertError.code,
+          details: insertError.details,
+          hint: (insertError as any).hint,
+        },
+      };
+    } else if (insertData?.id) {
+      // Limpiar el registro de prueba creado
+      await supabase.from('guests').delete().eq('id', insertData.id);
+      insertTestResult = {
+        success: true,
+        message: 'Escritura y lectura permitidas en la tabla guests.',
+      };
     }
 
+    const hasAnyError = Boolean(configError || guestsError || insertError);
+
     return NextResponse.json({
-      status: 'connected',
-      message: '¡Conexión exitosa con Supabase!',
-      eventConfigRows: configData?.length || 0,
-      guestsCount: guestsCount ?? guestsData?.length ?? 0,
+      status: hasAnyError ? 'partial_error' : 'connected',
+      message: hasAnyError ? 'Hay problemas con algunos permisos o tablas.' : '¡Conexión y permisos 100% operativos!',
+      readConfig: {
+        success: !configError,
+        rows: configData?.length || 0,
+        error: configError ? configError.message : null,
+      },
+      readGuests: {
+        success: !guestsError,
+        count: guestsCount ?? guestsData?.length ?? 0,
+        error: guestsError ? guestsError.message : null,
+      },
+      writeGuests: insertTestResult,
       diagnostics,
-    });
+    }, { status: hasAnyError ? 207 : 200 });
   } catch (err: any) {
     return NextResponse.json({
       status: 'exception',

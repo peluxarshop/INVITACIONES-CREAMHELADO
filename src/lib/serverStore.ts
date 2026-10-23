@@ -219,7 +219,7 @@ export async function serverAddGuest(newGuest: Omit<Guest, 'id' | 'createdAt'>):
 
   if (isSupabaseConfigured && supabase) {
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('guests')
         .insert([
           {
@@ -236,11 +236,17 @@ export async function serverAddGuest(newGuest: Omit<Guest, 'id' | 'createdAt'>):
         .select()
         .single();
 
+      if (error) {
+        console.error('❌ Error de Supabase al insertar invitado:', error);
+        throw new Error(`Error en Supabase: ${error.message}`);
+      }
+
       if (data) {
         guest.id = data.id;
       }
-    } catch (err) {
-      console.warn('Error guardando invitado en Supabase:', err);
+    } catch (err: any) {
+      console.warn('Error guardando invitado en Supabase:', err?.message || err);
+      throw err;
     }
   }
 

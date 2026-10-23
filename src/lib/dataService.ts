@@ -360,14 +360,7 @@ export async function updateGuestStatus(
 }
 
 export async function addGuest(newGuest: Omit<Guest, 'id' | 'createdAt'>): Promise<Guest> {
-  const id = `inv-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
-  const guest: Guest = {
-    ...newGuest,
-    id,
-    createdAt: new Date().toISOString(),
-  };
-
-  // Enviar a la API del servidor
+  // 1. En el navegador, guardar a través de la API del servidor (/api/guests)
   if (typeof window !== 'undefined') {
     try {
       const res = await fetch('/api/guests', {
@@ -375,24 +368,35 @@ export async function addGuest(newGuest: Omit<Guest, 'id' | 'createdAt'>): Promi
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ guest: newGuest }),
       });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.success && data.guest) {
-          guest.id = data.guest.id;
-        }
+      const data = await res.json();
+      if (res.ok && data.success && data.guest) {
+        const localGuests = getLocalGuests();
+        const updated = [data.guest, ...localGuests.filter((g) => g.id !== data.guest.id)];
+        saveLocalGuests(updated);
+        return data.guest;
+      } else {
+        const errorMsg = data.error || 'No se pudo guardar el invitado en la base de datos';
+        console.error('❌ Error guardando invitado:', errorMsg);
+        alert(`Error al guardar invitado: ${errorMsg}`);
+        throw new Error(errorMsg);
       }
-    } catch (err) {
-      console.warn('Error guardando invitado en el servidor central:', err);
+    } catch (err: any) {
+      console.error('Error en llamada a /api/guests:', err);
+      throw err;
     }
   }
 
-  const localGuests = getLocalGuests();
-  localGuests.unshift(guest);
-  saveLocalGuests(localGuests);
+  // 2. Si es entorno cliente directo con Supabase (fallback sin servidor)
+  const id = `inv-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+  const guest: Guest = {
+    ...newGuest,
+    id,
+    createdAt: new Date().toISOString(),
+  };
 
   if (isSupabaseConfigured && supabase) {
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('guests')
         .insert([
           {
@@ -409,13 +413,19 @@ export async function addGuest(newGuest: Omit<Guest, 'id' | 'createdAt'>): Promi
         .select()
         .single();
 
-      if (data) {
+      if (error) {
+        console.error('Error agregando invitado a Supabase:', error);
+      } else if (data) {
         guest.id = data.id;
       }
     } catch (e) {
       console.warn('Error agregando invitado a Supabase:', e);
     }
   }
+
+  const localGuests = getLocalGuests();
+  localGuests.unshift(guest);
+  saveLocalGuests(localGuests);
 
   return guest;
 }
