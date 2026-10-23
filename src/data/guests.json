@@ -1,5 +1,17 @@
 [
   {
+    "id": "inv-juan-gonzalez-1015469936",
+    "fullName": "Juan Gonzalez",
+    "firstName": "Juan",
+    "phone": "573000000000",
+    "email": "c-espinel@hotmail.com",
+    "status": "confirmed",
+    "cedula": "1015469936",
+    "area": "Logística",
+    "confirmedAt": "2026-10-23T03:56:05.447Z",
+    "createdAt": "2026-10-23T03:56:05.447Z"
+  },
+  {
     "id": "inv-juan-perez-101",
     "fullName": "Juan David Pérez Gómez",
     "firstName": "Juan David",
@@ -8,6 +20,7 @@
     "email": "juan.perez@cremhelado.com.co",
     "status": "confirmed",
     "cedula": "1020456789",
+    "area": "Logística",
     "confirmedAt": "2026-10-18T15:30:00Z",
     "createdAt": "2026-10-15T10:00:00Z"
   },
@@ -19,6 +32,7 @@
     "phone": "573109876543",
     "email": "maria.gomez@cremhelado.com.co",
     "status": "pending",
+    "area": "Comercial",
     "createdAt": "2026-10-15T10:00:00Z"
   },
   {
@@ -29,6 +43,7 @@
     "phone": "573155554433",
     "email": "carlos.rodriguez@cremhelado.com.co",
     "status": "declined",
+    "area": "Mantenimiento",
     "confirmedAt": "2026-10-19T09:15:00Z",
     "notes": "Compromiso familiar fuera de la ciudad",
     "createdAt": "2026-10-15T10:00:00Z"
@@ -41,6 +56,7 @@
     "phone": "573208048128",
     "email": "ana.zapata@cremhelado.com.co",
     "status": "pending",
+    "area": "Administración",
     "createdAt": "2026-10-15T10:00:00Z"
   },
   {
@@ -52,6 +68,7 @@
     "email": "santiago.londono@cremhelado.com.co",
     "status": "confirmed",
     "cedula": "1037654321",
+    "area": "Comercial",
     "confirmedAt": "2026-10-20T08:45:00Z",
     "createdAt": "2026-10-15T10:00:00Z"
   }

@@ -9,6 +9,7 @@ export interface Guest {
   email: string;
   status: GuestStatus;
   cedula?: string;
+  area?: 'Logística' | 'Comercial' | 'Mantenimiento' | 'Administración' | string;
   confirmedAt?: string;
   notes?: string;
   createdAt: string;

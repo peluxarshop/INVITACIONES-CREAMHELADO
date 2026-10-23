@@ -9,15 +9,28 @@ export const INITIAL_MOCK_GUESTS: Guest[] = defaultGuests as Guest[];
 const CONFIG_STORAGE_KEY = 'cremhelado_event_config_v2';
 const GUESTS_STORAGE_KEY = 'cremhelado_guests_list_v2';
 
+function sanitizeDressCode(dressCode?: string): string {
+  if (!dressCode || dressCode.includes('Elegante Casual')) {
+    return 'Como mejor te sientas';
+  }
+  return dressCode;
+}
+
 function getLocalConfig(): EventConfig {
-  if (typeof window === 'undefined') return DEFAULT_CONFIG;
+  if (typeof window === 'undefined') return { ...DEFAULT_CONFIG, dressCode: sanitizeDressCode(DEFAULT_CONFIG.dressCode) };
   const stored = localStorage.getItem(CONFIG_STORAGE_KEY);
   if (!stored) {
-    localStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify(DEFAULT_CONFIG));
-    return DEFAULT_CONFIG;
+    const fresh = { ...DEFAULT_CONFIG, dressCode: sanitizeDressCode(DEFAULT_CONFIG.dressCode) };
+    localStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify(fresh));
+    return fresh;
   }
   try {
-    return { ...DEFAULT_CONFIG, ...JSON.parse(stored) };
+    const parsed = JSON.parse(stored);
+    return {
+      ...DEFAULT_CONFIG,
+      ...parsed,
+      dressCode: sanitizeDressCode(parsed.dressCode || DEFAULT_CONFIG.dressCode),
+    };
   } catch {
     return DEFAULT_CONFIG;
   }
@@ -48,7 +61,7 @@ function saveLocalGuests(guests: Guest[]): void {
 }
 
 // ==========================================
-// SERVICIOS PÚBLICOS DE DATOS (Supabase + Fallback JSON/Local)
+// SERVICIOS PÚBLICOS DE DATOS (API Central + Supabase + Fallback Local)
 // ==========================================
 
 export async function fetchEventConfig(): Promise<EventConfig> {
@@ -71,7 +84,7 @@ export async function fetchEventConfig(): Promise<EventConfig> {
           locationName: data.location_name || DEFAULT_CONFIG.locationName,
           locationAddress: data.location_address || DEFAULT_CONFIG.locationAddress,
           mapsUrl: data.maps_url || DEFAULT_CONFIG.mapsUrl,
-          dressCode: data.dress_code || DEFAULT_CONFIG.dressCode,
+          dressCode: sanitizeDressCode(data.dress_code || DEFAULT_CONFIG.dressCode),
           motivationalMessage: data.motivational_message || DEFAULT_CONFIG.motivationalMessage,
           logoUrl: data.logo_url || DEFAULT_CONFIG.logoUrl,
           primaryColor: data.primary_color || DEFAULT_CONFIG.primaryColor,
@@ -90,6 +103,7 @@ export async function fetchEventConfig(): Promise<EventConfig> {
 }
 
 export async function saveEventConfig(config: EventConfig): Promise<EventConfig> {
+  config.dressCode = sanitizeDressCode(config.dressCode);
   saveLocalConfig(config);
 
   if (isSupabaseConfigured && supabase) {
@@ -128,6 +142,23 @@ export async function saveEventConfig(config: EventConfig): Promise<EventConfig>
 }
 
 export async function fetchGuests(): Promise<Guest[]> {
+  // 1. En el navegador, consultar la API central del servidor (que sincroniza entre todos los dispositivos)
+  if (typeof window !== 'undefined') {
+    try {
+      const res = await fetch('/api/guests', { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && Array.isArray(data.guests)) {
+          saveLocalGuests(data.guests);
+          return data.guests;
+        }
+      }
+    } catch (err) {
+      console.warn('Fallo consultando /api/guests, usando fallback local/Supabase:', err);
+    }
+  }
+
+  // 2. Si hay conexión directa a Supabase
   if (isSupabaseConfigured && supabase) {
     try {
       const { data, error } = await supabase
@@ -136,7 +167,7 @@ export async function fetchGuests(): Promise<Guest[]> {
         .order('created_at', { ascending: false });
 
       if (!error && data) {
-        return data.map((item: any) => ({
+        const mapped = data.map((item: any) => ({
           id: item.id,
           fullName: item.full_name,
           firstName: item.first_name,
@@ -145,10 +176,13 @@ export async function fetchGuests(): Promise<Guest[]> {
           email: item.email,
           status: item.status as GuestStatus,
           cedula: item.cedula,
+          area: item.area,
           confirmedAt: item.confirmed_at,
           notes: item.notes,
           createdAt: item.created_at,
         }));
+        saveLocalGuests(mapped);
+        return mapped;
       }
     } catch (e) {
       console.warn('Fallo leyendo invitados de Supabase, usando respaldo JSON/local:', e);
@@ -159,6 +193,22 @@ export async function fetchGuests(): Promise<Guest[]> {
 }
 
 export async function fetchGuestById(id: string): Promise<Guest | null> {
+  // 1. Consultar a la API centralizada del servidor
+  if (typeof window !== 'undefined') {
+    try {
+      const res = await fetch(`/api/rsvp?id=${encodeURIComponent(id)}`, { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.guest) {
+          return data.guest;
+        }
+      }
+    } catch (err) {
+      console.warn('Fallo consultando /api/rsvp?id, usando fallback:', err);
+    }
+  }
+
+  // 2. Si hay Supabase
   if (isSupabaseConfigured && supabase) {
     try {
       const { data, error } = await supabase
@@ -177,6 +227,7 @@ export async function fetchGuestById(id: string): Promise<Guest | null> {
           email: data.email,
           status: data.status as GuestStatus,
           cedula: data.cedula,
+          area: data.area,
           confirmedAt: data.confirmed_at,
           notes: data.notes,
           createdAt: data.created_at,
@@ -194,14 +245,38 @@ export async function fetchGuestById(id: string): Promise<Guest | null> {
 export async function updateGuestStatus(
   id: string,
   status: GuestStatus,
-  extra?: { fullName?: string; cedula?: string; email?: string; notes?: string }
+  extra?: { fullName?: string; cedula?: string; email?: string; area?: string; notes?: string }
 ): Promise<Guest | null> {
   const now = new Date().toISOString();
+  let serverUpdated: Guest | null = null;
 
-  // Actualizar local
+  // 1. Guardar en el servidor central vía API (para que cualquier dispositivo que confirme sea visible de inmediato en el Admin)
+  if (typeof window !== 'undefined') {
+    try {
+      const res = await fetch('/api/rsvp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id,
+          status,
+          ...(extra || {}),
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.guest) {
+          serverUpdated = data.guest;
+        }
+      }
+    } catch (err) {
+      console.warn('Error enviando RSVP al servidor central:', err);
+    }
+  }
+
+  // 2. Actualizar caché local del navegador
   const localGuests = getLocalGuests();
   const index = localGuests.findIndex((g) => g.id === id);
-  let updatedGuest: Guest | null = null;
+  let updatedGuest: Guest | null = serverUpdated;
 
   if (index !== -1) {
     localGuests[index] = {
@@ -211,13 +286,17 @@ export async function updateGuestStatus(
       ...(extra?.fullName ? { fullName: extra.fullName } : {}),
       ...(extra?.cedula ? { cedula: extra.cedula } : {}),
       ...(extra?.email ? { email: extra.email } : {}),
+      ...(extra?.area ? { area: extra.area } : {}),
       ...(extra?.notes ? { notes: extra.notes } : {}),
     };
     saveLocalGuests(localGuests);
-    updatedGuest = localGuests[index];
+    if (!updatedGuest) updatedGuest = localGuests[index];
+  } else if (serverUpdated) {
+    localGuests.unshift(serverUpdated);
+    saveLocalGuests(localGuests);
   }
 
-  // Actualizar Supabase
+  // 3. Actualizar Supabase directamente si está configurado en cliente
   if (isSupabaseConfigured && supabase) {
     try {
       const payload: any = {
@@ -228,6 +307,7 @@ export async function updateGuestStatus(
       if (extra?.fullName) payload.full_name = extra.fullName;
       if (extra?.cedula) payload.cedula = extra.cedula;
       if (extra?.email) payload.email = extra.email;
+      if (extra?.area) payload.area = extra.area;
       if (extra?.notes) payload.notes = extra.notes;
 
       await supabase.from('guests').update(payload).eq('id', id);
@@ -247,6 +327,25 @@ export async function addGuest(newGuest: Omit<Guest, 'id' | 'createdAt'>): Promi
     createdAt: new Date().toISOString(),
   };
 
+  // Enviar a la API del servidor
+  if (typeof window !== 'undefined') {
+    try {
+      const res = await fetch('/api/guests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ guest: newGuest }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.guest) {
+          guest.id = data.guest.id;
+        }
+      }
+    } catch (err) {
+      console.warn('Error guardando invitado en el servidor central:', err);
+    }
+  }
+
   const localGuests = getLocalGuests();
   localGuests.unshift(guest);
   saveLocalGuests(localGuests);
@@ -264,6 +363,7 @@ export async function addGuest(newGuest: Omit<Guest, 'id' | 'createdAt'>): Promi
             email: guest.email,
             status: guest.status,
             cedula: guest.cedula || null,
+            area: guest.area || null,
           },
         ])
         .select()
@@ -289,6 +389,18 @@ export async function addGuestsBulk(
     createdAt: new Date().toISOString(),
   }));
 
+  if (typeof window !== 'undefined') {
+    try {
+      await fetch('/api/guests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ guests: newGuests }),
+      });
+    } catch (err) {
+      console.warn('Error guardando lote en servidor central:', err);
+    }
+  }
+
   const localGuests = getLocalGuests();
   const updatedList = [...created, ...localGuests];
   saveLocalGuests(updatedList);
@@ -302,6 +414,7 @@ export async function addGuestsBulk(
         phone: g.phone,
         email: g.email,
         status: g.status,
+        area: g.area || null,
       }));
 
       await supabase.from('guests').insert(rows);
@@ -313,10 +426,80 @@ export async function addGuestsBulk(
   return created;
 }
 
+export async function updateGuestFull(guest: Guest): Promise<Guest> {
+  // 1. Enviar a la API central del servidor
+  if (typeof window !== 'undefined') {
+    try {
+      const res = await fetch('/api/guests', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ guest }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.guest) {
+          guest = data.guest;
+        }
+      }
+    } catch (err) {
+      console.warn('Error actualizando invitado vía API:', err);
+    }
+  }
+
+  // 2. Actualizar caché local
+  const localGuests = getLocalGuests();
+  const index = localGuests.findIndex((g) => g.id === guest.id);
+  if (index !== -1) {
+    localGuests[index] = guest;
+  } else {
+    localGuests.unshift(guest);
+  }
+  saveLocalGuests(localGuests);
+
+  // 3. Supabase directo si está configurado en cliente
+  if (isSupabaseConfigured && supabase) {
+    try {
+      await supabase
+        .from('guests')
+        .update({
+          full_name: guest.fullName,
+          first_name: guest.firstName || guest.fullName.split(' ')[0],
+          last_name: guest.lastName || guest.fullName.split(' ').slice(1).join(' '),
+          phone: guest.phone,
+          email: guest.email,
+          status: guest.status,
+          cedula: guest.cedula || null,
+          area: guest.area || null,
+          notes: guest.notes || null,
+          confirmed_at: guest.status === 'confirmed' ? (guest.confirmedAt || new Date().toISOString()) : null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', guest.id);
+    } catch (err) {
+      console.warn('Error actualizando en Supabase:', err);
+    }
+  }
+
+  return guest;
+}
+
 export async function deleteGuest(id: string): Promise<boolean> {
+  // 1. Eliminar en el servidor vía API
+  if (typeof window !== 'undefined') {
+    try {
+      await fetch(`/api/guests?id=${encodeURIComponent(id)}`, {
+        method: 'DELETE',
+      });
+    } catch (err) {
+      console.warn('Error eliminando en API:', err);
+    }
+  }
+
+  // 2. Eliminar en caché local
   const localGuests = getLocalGuests().filter((g) => g.id !== id);
   saveLocalGuests(localGuests);
 
+  // 3. Eliminar en Supabase
   if (isSupabaseConfigured && supabase) {
     try {
       await supabase.from('guests').delete().eq('id', id);

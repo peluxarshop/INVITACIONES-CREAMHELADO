@@ -116,6 +116,16 @@ export async function sendConfirmationEmail(
                   </tr>`
                       : ''
                   }
+                  ${
+                    guest.area
+                      ? `
+                  <tr>
+                    <td style="padding-bottom: 12px; font-size: 14px; color: #334155;">
+                      <strong>🏢 Área:</strong> <span style="background-color: #ecfdf5; padding: 3px 8px; border-radius: 6px; border: 1px solid #a7f3d0; font-weight: bold; color: #047857;">${guest.area}</span>
+                    </td>
+                  </tr>`
+                      : ''
+                  }
                   <tr>
                     <td style="padding-bottom: 12px; font-size: 14px; color: #334155;">
                       <strong>📅 Fecha:</strong> ${config.eventDate} (Viernes)
@@ -133,7 +143,7 @@ export async function sendConfirmationEmail(
                   </tr>
                   <tr>
                     <td style="padding-bottom: 12px; font-size: 14px; color: #334155;">
-                      <strong>👔 Dress Code:</strong> ${config.dressCode}
+                      <strong>👔 Código de Vestimenta:</strong> ${config.dressCode || 'Como mejor te sientas'}
                     </td>
                   </tr>
                   <tr>
@@ -272,7 +282,7 @@ export async function sendInvitationEmail(
                   </tr>
                   <tr>
                     <td style="padding-bottom: 10px; font-size: 14px; color: #334155;">
-                      👔 <strong>Código de Vestimenta:</strong> ${config.dressCode}
+                      👔 <strong>Código de Vestimenta:</strong> ${config.dressCode || 'Como mejor te sientas'}
                     </td>
                   </tr>
                   <tr>

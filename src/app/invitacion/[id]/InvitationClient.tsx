@@ -16,6 +16,7 @@ import {
   faEnvelope,
   faExclamationTriangle,
   faSpinner,
+  faUserPlus,
 } from '@fortawesome/free-solid-svg-icons';
 import { EventConfig, Guest } from '@/types';
 import { CountdownTimer } from '@/components/CountdownTimer';
@@ -46,10 +47,24 @@ import {
 } from '@/lib/dataService';
 
 interface InvitationClientProps {
-  guestId: string;
+  guestId?: string;
+  isGeneralRegistration?: boolean;
 }
 
-export const InvitationClient: React.FC<InvitationClientProps> = ({ guestId }) => {
+const createFreshGuest = (): Guest => ({
+  id: `inv-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+  fullName: 'Invitado(a) de Honor',
+  firstName: 'Apreciado(a) Colaborador(a)',
+  phone: '573000000000',
+  email: '',
+  status: 'pending',
+  createdAt: new Date().toISOString(),
+});
+
+export const InvitationClient: React.FC<InvitationClientProps> = ({
+  guestId,
+  isGeneralRegistration = false,
+}) => {
   const [config, setConfig] = useState<EventConfig>(DEFAULT_CONFIG);
   const [guest, setGuest] = useState<Guest | null>(null);
   const [loading, setLoading] = useState(true);
@@ -60,24 +75,27 @@ export const InvitationClient: React.FC<InvitationClientProps> = ({ guestId }) =
     async function loadData() {
       try {
         setLoading(true);
-        const [loadedConfig, loadedGuest] = await Promise.all([
-          fetchEventConfig(),
-          fetchGuestById(guestId),
-        ]);
-        setConfig(loadedConfig);
 
-        if (loadedGuest) {
-          setGuest(loadedGuest);
+        if (isGeneralRegistration) {
+          const loadedConfig = await fetchEventConfig();
+          setConfig(loadedConfig);
+          setGuest(createFreshGuest());
+        } else if (guestId) {
+          const [loadedConfig, loadedGuest] = await Promise.all([
+            fetchEventConfig(),
+            fetchGuestById(guestId),
+          ]);
+          setConfig(loadedConfig);
+
+          if (loadedGuest) {
+            setGuest(loadedGuest);
+          } else {
+            setGuest(createFreshGuest());
+          }
         } else {
-          setGuest({
-            id: guestId || 'inv-invitado-especial',
-            fullName: 'Invitado(a) de Honor',
-            firstName: 'Apreciado(a) Colaborador(a)',
-            phone: '573000000000',
-            email: 'invitado@cremhelado.com.co',
-            status: 'pending',
-            createdAt: new Date().toISOString(),
-          });
+          const loadedConfig = await fetchEventConfig();
+          setConfig(loadedConfig);
+          setGuest(createFreshGuest());
         }
       } catch (err) {
         console.error('Error cargando invitación:', err);
@@ -87,7 +105,7 @@ export const InvitationClient: React.FC<InvitationClientProps> = ({ guestId }) =
     }
 
     loadData();
-  }, [guestId]);
+  }, [guestId, isGeneralRegistration]);
 
   const fireConfetti = () => {
     confetti({
@@ -98,12 +116,13 @@ export const InvitationClient: React.FC<InvitationClientProps> = ({ guestId }) =
     });
   };
 
-  const handleConfirm = async (data: { fullName: string; cedula: string; email: string }) => {
+  const handleConfirm = async (data: { fullName: string; cedula: string; email: string; area: string }) => {
     if (!guest) return;
     const updated = await updateGuestStatus(guest.id, 'confirmed', {
       fullName: data.fullName,
       cedula: data.cedula,
       email: data.email,
+      area: data.area,
     });
 
     const finalGuest = updated || {
@@ -112,6 +131,7 @@ export const InvitationClient: React.FC<InvitationClientProps> = ({ guestId }) =
       fullName: data.fullName,
       cedula: data.cedula,
       email: data.email,
+      area: data.area,
       confirmedAt: new Date().toISOString(),
     };
     setGuest(finalGuest);
@@ -164,6 +184,14 @@ export const InvitationClient: React.FC<InvitationClientProps> = ({ guestId }) =
         status: 'declined',
         notes: reason,
       });
+    }
+  };
+
+  const handleResetForm = () => {
+    setGuest(createFreshGuest());
+    setEmailFeedback(null);
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -414,13 +442,25 @@ export const InvitationClient: React.FC<InvitationClientProps> = ({ guestId }) =
 
             <DigitalPass guest={guest} config={config} />
 
-            <div className="text-center">
-              <button
-                onClick={() => setModalType('confirm')}
-                className="text-sm text-white font-semibold underline underline-offset-4 decoration-2 hover:text-crem-gold cursor-pointer"
-              >
-                ¿Deseas actualizar tu nombre, cédula o correo? Haz clic aquí
-              </button>
+            <div className="text-center space-y-4 pt-2">
+              <div>
+                <button
+                  onClick={() => setModalType('confirm')}
+                  className="text-sm text-white font-semibold underline underline-offset-4 decoration-2 hover:text-crem-gold cursor-pointer transition-colors"
+                >
+                  ¿Deseas actualizar tu nombre, cédula, correo o área? Haz clic aquí
+                </button>
+              </div>
+
+              <div>
+                <button
+                  onClick={handleResetForm}
+                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-white text-slate-900 hover:bg-slate-50 font-bold text-sm shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all cursor-pointer border-2 border-slate-200"
+                >
+                  <FontAwesomeIcon icon={faUserPlus} className="text-crem-red text-base" />
+                  <span>Llenar otra invitación / Registrar otro colaborador</span>
+                </button>
+              </div>
             </div>
           </section>
         ) : guest?.status === 'declined' ? (

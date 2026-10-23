@@ -11,6 +11,7 @@ import {
   faEnvelope,
   faHeart,
   faExclamationCircle,
+  faBuilding,
 } from '@fortawesome/free-solid-svg-icons';
 import { Guest } from '@/types';
 import { StitchedCard } from '@/components/festive/Festive';
@@ -21,7 +22,7 @@ interface RsvpModalProps {
   guest: Guest;
   companyName: string;
   onClose: () => void;
-  onConfirmSuccess: (data: { fullName: string; cedula: string; email: string }) => Promise<void>;
+  onConfirmSuccess: (data: { fullName: string; cedula: string; email: string; area: string }) => Promise<void>;
   onDeclineSuccess: (reason?: string) => Promise<void>;
 }
 
@@ -37,6 +38,7 @@ export const RsvpModal: React.FC<RsvpModalProps> = ({
   const [fullName, setFullName] = useState(guest.fullName || '');
   const [cedula, setCedula] = useState(guest.cedula || '');
   const [email, setEmail] = useState(guest.email || '');
+  const [area, setArea] = useState(guest.area || '');
   const [reason, setReason] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -85,6 +87,10 @@ export const RsvpModal: React.FC<RsvpModalProps> = ({
       setError('Por favor ingresa tu número de cédula para el control de acceso.');
       return;
     }
+    if (!area.trim()) {
+      setError('Por favor selecciona tu Área de trabajo.');
+      return;
+    }
 
     try {
       setLoading(true);
@@ -92,6 +98,7 @@ export const RsvpModal: React.FC<RsvpModalProps> = ({
         fullName: fullName.trim(),
         cedula: cedula.trim(),
         email: email.trim(),
+        area: area.trim(),
       });
       launchCelebrationConfetti();
       onClose();
@@ -177,6 +184,25 @@ export const RsvpModal: React.FC<RsvpModalProps> = ({
                     <span className="text-[11px] text-slate-500 mt-1 block">
                       Requerido para control de seguridad en portería y rifas.
                     </span>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-2">
+                      <FontAwesomeIcon icon={faBuilding} className="text-crem-green text-xs" />
+                      <span>Área *</span>
+                    </label>
+                    <select
+                      required
+                      value={area}
+                      onChange={(e) => setArea(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 text-slate-900 focus:outline-none focus:border-crem-green focus:bg-white text-sm transition-all cursor-pointer font-medium"
+                    >
+                      <option value="" disabled>Selecciona tu área...</option>
+                      <option value="Logística">Logística</option>
+                      <option value="Comercial">Comercial</option>
+                      <option value="Mantenimiento">Mantenimiento</option>
+                      <option value="Administración">Administración</option>
+                    </select>
                   </div>
 
                   <div>

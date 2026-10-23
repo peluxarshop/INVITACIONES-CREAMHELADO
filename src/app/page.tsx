@@ -8,6 +8,9 @@ import {
   faEnvelopeOpenText,
   faCircleCheck,
   faTicket,
+  faHeart,
+  faUsers,
+  faSmile,
 } from '@fortawesome/free-solid-svg-icons';
 import { Footer } from '@/components/Footer';
 import { SnowEffect } from '@/components/SnowEffect';
@@ -28,28 +31,28 @@ import {
 
 const features = [
   {
-    icon: faQrcode,
+    icon: faHeart,
     iconBg: 'bg-crem-red',
-    title: 'Pase VIP',
-    highlight: 'con QR',
+    title: 'Pasión &',
+    highlight: 'Entrega',
     highlightColor: 'text-crem-red',
-    text: 'Confirmación inmediata y un código QR personal para entrar sin filas a la fiesta.',
+    text: 'Cada meta alcanzada este año lleva tu sello único. Gracias por entregar el corazón en cada jornada y hacer de nuestro trabajo un verdadero orgullo.',
   },
   {
-    icon: faUtensils,
+    icon: faUsers,
     iconBg: 'bg-crem-green',
-    title: 'Banquete &',
-    highlight: 'Heladería',
+    title: 'Familia &',
+    highlight: 'Unión',
     highlightColor: 'text-crem-green',
-    text: 'Cena de gala, brindis de honor y estación ilimitada de postres y helados Crem Helado.',
+    text: 'Más que un equipo, somos un hogar donde cada persona cuenta. Nos apoyamos en los retos y crecemos juntos con calidez, respeto y compañerismo.',
   },
   {
-    icon: faGift,
+    icon: faSmile,
     iconBg: 'bg-crem-red',
-    title: 'Grandes',
-    highlight: 'Rifas',
+    title: 'Gratitud &',
+    highlight: 'Sonrisas',
     highlightColor: 'text-crem-red',
-    text: 'Sorteos, bonos navideños y sorpresas para todos los colaboradores confirmados.',
+    text: 'El verdadero valor de este año son las sonrisas compartidas, las historias que nos unen y la satisfacción de transformar vidas día tras día.',
   },
 ];
 
@@ -152,10 +155,10 @@ export default function Home() {
         <section className="relative max-w-6xl mx-auto px-4 sm:px-6 pb-16 sm:pb-20">
           <div className="text-center mb-8 sm:mb-10">
             <h2 className="font-display text-pop text-4xl sm:text-5xl md:text-6xl uppercase leading-none">
-              Una noche mágica
+              El corazón de nuestra empresa
             </h2>
             <p className="text-white/90 font-semibold text-sm sm:text-base mt-3">
-              Esto es lo que te espera en la celebración
+              Valores, unión y momentos que nos inspiran a seguir creciendo juntos
             </p>
           </div>
 

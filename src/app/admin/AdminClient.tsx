@@ -29,6 +29,7 @@ import {
   addGuestsBulk,
   deleteGuest,
   updateGuestStatus,
+  updateGuestFull,
   DEFAULT_CONFIG,
 } from '@/lib/dataService';
 
@@ -103,6 +104,11 @@ export const AdminClient: React.FC = () => {
   const handleDeleteGuest = async (id: string) => {
     await deleteGuest(id);
     setGuests((prev) => prev.filter((g) => g.id !== id));
+  };
+
+  const handleUpdateGuest = async (updatedGuest: Guest) => {
+    const saved = await updateGuestFull(updatedGuest);
+    setGuests((prev) => prev.map((g) => (g.id === saved.id ? saved : g)));
   };
 
   const handleStatusChange = async (id: string, status: GuestStatus) => {
@@ -215,8 +221,8 @@ export const AdminClient: React.FC = () => {
 
       {/* Contenido Principal */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Métricas Principales (KPIs) */}
-        <AdminKpiCards metrics={metrics} />
+        {/* Métricas Principales (KPIs) y Asistentes por Área */}
+        <AdminKpiCards metrics={metrics} guests={guests} />
 
         {/* Pestañas de Navegación */}
         <div className="flex border-b border-slate-200 mb-6 gap-2 sm:gap-4 overflow-x-auto text-xs sm:text-sm">
@@ -263,6 +269,7 @@ export const AdminClient: React.FC = () => {
             guests={guests}
             config={config}
             onAddGuest={handleAddGuest}
+            onUpdateGuest={handleUpdateGuest}
             onDeleteGuest={handleDeleteGuest}
             onStatusChange={handleStatusChange}
           />

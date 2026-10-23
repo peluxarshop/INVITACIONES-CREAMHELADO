@@ -23,13 +23,41 @@ const lilitaOne = Lilita_One({
   subsets: ['latin'],
 });
 
+const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://meals.peluxar.com';
+
 export const metadata: Metadata = {
-  title: 'Gran Fiesta de Fin de Año | Crem Helado',
-  description: 'Sistema oficial de invitaciones y pases VIP para la fiesta de despedida de empresa.',
+  metadataBase: new URL(appUrl),
+  title: 'Gran Fiesta de Fin de Año & Celebración 2026 | Crem Helado',
+  description: 'Sistema oficial de invitaciones y pases VIP para la fiesta de despedida de empresa Crem Helado.',
+  icons: {
+    icon: [
+      { url: '/logo-cremhelado.png', type: 'image/png' },
+      { url: '/favicon.ico' },
+    ],
+    shortcut: '/logo-cremhelado.png',
+    apple: '/logo-cremhelado.png',
+  },
   openGraph: {
     title: '🎉 Tienes una Invitación Especial | Crem Helado',
-    description: 'Confirma tu asistencia y descarga tu Pase Digital VIP para la celebración.',
+    description: 'Confirma tu asistencia y descarga tu Pase Digital VIP para la gran fiesta de empresa.',
+    url: appUrl,
+    siteName: 'Crem Helado Eventos',
+    images: [
+      {
+        url: '/og-cremhelado.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Invitación Especial Fiesta Crem Helado 2026',
+      },
+    ],
     type: 'website',
+    locale: 'es_CO',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: '🎉 Tienes una Invitación Especial | Crem Helado',
+    description: 'Confirma tu asistencia y descarga tu Pase Digital VIP para la gran fiesta de empresa.',
+    images: ['/og-cremhelado.jpg'],
   },
 };
 

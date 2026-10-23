@@ -115,6 +115,14 @@ export const DigitalPass: React.FC<DigitalPassProps> = ({ guest, config }) => {
                 </span>
               </div>
             )}
+            {guest.area && (
+              <div className="text-xs text-slate-700 mt-2 flex items-center gap-2">
+                <span className="font-bold">Área:</span>
+                <span className="font-semibold text-slate-900 bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded border border-emerald-200">
+                  {guest.area}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Beneficios Incluidos */}

@@ -15,10 +15,29 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: 'Invitación Especial - Fiesta de Fin de Año | Crem Helado',
     description: 'Tienes una invitación muy especial para celebrar con nosotros. Confirma tu asistencia aquí.',
+    icons: {
+      icon: '/logo-cremhelado.png',
+      shortcut: '/logo-cremhelado.png',
+      apple: '/logo-cremhelado.png',
+    },
     openGraph: {
       title: '🎉 Tienes una Invitación Especial | Crem Helado',
       description: 'Confirma tu asistencia y obtén tu pase digital VIP para la gran fiesta de empresa.',
+      images: [
+        {
+          url: '/og-cremhelado.jpg',
+          width: 1200,
+          height: 630,
+          alt: 'Invitación Especial Crem Helado',
+        },
+      ],
       type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: '🎉 Tienes una Invitación Especial | Crem Helado',
+      description: 'Confirma tu asistencia y obtén tu pase digital VIP para la gran fiesta de empresa.',
+      images: ['/og-cremhelado.jpg'],
     },
   };
 }
