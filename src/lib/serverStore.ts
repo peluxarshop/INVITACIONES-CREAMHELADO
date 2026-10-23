@@ -40,7 +40,7 @@ function saveToFile(guests: Guest[]): void {
 }
 
 export async function serverGetGuests(): Promise<Guest[]> {
-  // 1. Intentar consultar Supabase si está configurado
+  // 1. Consultar Supabase si está configurado
   if (isSupabaseConfigured && supabase) {
     try {
       const { data, error } = await supabase
@@ -51,53 +51,28 @@ export async function serverGetGuests(): Promise<Guest[]> {
       if (error) {
         console.error('❌ Error de Supabase al consultar "guests":', error.message || error);
       } else if (data) {
-        if (data.length > 0) {
-          return data.map((item: any) => ({
-            id: item.id,
-            fullName: item.full_name,
-            firstName: item.first_name,
-            lastName: item.last_name,
-            phone: item.phone,
-            email: item.email,
-            status: item.status as GuestStatus,
-            cedula: item.cedula,
-            area: item.area,
-            confirmedAt: item.confirmed_at,
-            notes: item.notes,
-            createdAt: item.created_at,
-          }));
-        } else {
-          // Si Supabase está conectado pero la tabla está vacía, intentamos poblarla automáticamente
-          console.log('ℹ️ Tabla "guests" en Supabase está vacía. Sembrando datos iniciales...');
-          const initialGuests = loadFromFile();
-          try {
-            const rowsToInsert = initialGuests.map((g) => ({
-              id: g.id,
-              full_name: g.fullName,
-              first_name: g.firstName || g.fullName.split(' ')[0],
-              last_name: g.lastName || g.fullName.split(' ').slice(1).join(' '),
-              phone: g.phone,
-              email: g.email,
-              status: g.status,
-              cedula: g.cedula || null,
-              area: g.area || null,
-              notes: g.notes || null,
-              confirmed_at: g.confirmedAt || null,
-              created_at: g.createdAt || new Date().toISOString(),
-            }));
-            await supabase.from('guests').upsert(rowsToInsert);
-          } catch (seedErr: any) {
-            console.warn('No se pudo autosembrar guests en Supabase:', seedErr?.message);
-          }
-          return initialGuests;
-        }
+        // Retornar exactamente los datos reales de la base de datos (si está en 0, retorna 0)
+        return data.map((item: any) => ({
+          id: item.id,
+          fullName: item.full_name,
+          firstName: item.first_name,
+          lastName: item.last_name,
+          phone: item.phone,
+          email: item.email,
+          status: item.status as GuestStatus,
+          cedula: item.cedula,
+          area: item.area,
+          confirmedAt: item.confirmed_at,
+          notes: item.notes,
+          createdAt: item.created_at,
+        }));
       }
     } catch (err) {
       console.warn('Error leyendo invitados de Supabase en el servidor:', err);
     }
   }
 
-  // 2. Respaldo centralizado en disco / memoria
+  // 2. Respaldo centralizado en disco / memoria sólo si Supabase NO está configurado o falló
   return loadFromFile();
 }
 
@@ -110,7 +85,10 @@ export async function serverGetGuestById(id: string): Promise<Guest | null> {
         .eq('id', id)
         .maybeSingle();
 
-      if (!error && data) {
+      if (error) {
+        console.error('Error buscando invitado en Supabase:', error.message);
+      } else {
+        if (!data) return null;
         return {
           id: data.id,
           fullName: data.full_name,

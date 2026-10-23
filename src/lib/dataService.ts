@@ -42,16 +42,17 @@ function saveLocalConfig(config: EventConfig): void {
 }
 
 function getLocalGuests(): Guest[] {
-  if (typeof window === 'undefined') return INITIAL_MOCK_GUESTS;
+  if (typeof window === 'undefined') return isSupabaseConfigured ? [] : INITIAL_MOCK_GUESTS;
   const stored = localStorage.getItem(GUESTS_STORAGE_KEY);
   if (!stored) {
-    localStorage.setItem(GUESTS_STORAGE_KEY, JSON.stringify(INITIAL_MOCK_GUESTS));
-    return INITIAL_MOCK_GUESTS;
+    const fallback = isSupabaseConfigured ? [] : INITIAL_MOCK_GUESTS;
+    localStorage.setItem(GUESTS_STORAGE_KEY, JSON.stringify(fallback));
+    return fallback;
   }
   try {
     return JSON.parse(stored);
   } catch {
-    return INITIAL_MOCK_GUESTS;
+    return isSupabaseConfigured ? [] : INITIAL_MOCK_GUESTS;
   }
 }
 

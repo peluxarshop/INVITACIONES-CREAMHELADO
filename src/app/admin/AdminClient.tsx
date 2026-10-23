@@ -71,6 +71,10 @@ export const AdminClient: React.FC = () => {
 
   const handleRefresh = () => {
     setIsRefreshing(true);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('cremhelado_guests_list_v2');
+      localStorage.removeItem('cremhelado_event_config_v2');
+    }
     loadAll();
   };
 
