@@ -55,9 +55,19 @@ export async function sendConfirmationEmail(
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Pase VIP Confirmado - ${config.eventName}</title>
+        <style type="text/css">
+          body, table, td, p, a, span, div, strong, b {
+            font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif !important;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+          }
+          strong, b {
+            font-weight: 700 !important;
+          }
+        </style>
       </head>
-      <body style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #faf8f5; margin: 0; padding: 24px; color: #1e293b;">
-        <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 28px; overflow: hidden; box-shadow: 0 12px 35px rgba(0,0,0,0.06); border: 1px solid #ebd9c8;">
+      <body style="font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif; background-color: #faf8f5; margin: 0; padding: 24px; color: #1e293b; -webkit-font-smoothing: antialiased;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 28px; overflow: hidden; box-shadow: 0 12px 35px rgba(0,0,0,0.06); border: 1px solid #ebd9c8; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
           <!-- Franja superior festiva oro y rojo Crem Helado -->
           <tr>
             <td style="height: 6px; background: linear-gradient(90deg, #E30613 0%, #D4AF37 50%, #005CA9 100%);"></td>
@@ -65,14 +75,14 @@ export async function sendConfirmationEmail(
 
           <!-- Header con Logo Oficial -->
           <tr>
-            <td style="background-color: #ffffff; padding: 32px 24px 20px 24px; text-align: center;">
+            <td style="background-color: #ffffff; padding: 32px 24px 20px 24px; text-align: center; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
               <img src="${logoUrl}" alt="${config.companyName}" width="170" style="display: block; margin: 0 auto 14px auto; max-width: 170px; height: auto;" />
               <div style="display: inline-block; background-color: #fef2f2; border: 1px solid #fecaca; padding: 4px 14px; border-radius: 20px;">
-                <span style="color: #E30613; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;">
+                <span style="color: #E30613; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
                   Celebración &bull; Fin de Año 2026
                 </span>
               </div>
-              <h1 style="color: #0f172a; margin: 12px 0 0 0; font-size: 20px; font-weight: 800; letter-spacing: -0.3px;">
+              <h1 style="color: #0f172a; margin: 12px 0 0 0; font-size: 20px; font-weight: 800; letter-spacing: -0.3px; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
                 ${config.eventName}
               </h1>
             </td>
@@ -80,38 +90,42 @@ export async function sendConfirmationEmail(
 
           <!-- Contenido Principal -->
           <tr>
-            <td style="padding: 24px 32px 36px 32px;">
+            <td style="padding: 24px 32px 36px 32px; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
               <div style="background: linear-gradient(180deg, #ecfdf5 0%, #ffffff 100%); border: 1px solid #a7f3d0; border-radius: 20px; padding: 22px; text-align: center; margin-bottom: 24px;">
                 <span style="font-size: 32px; display: block; margin-bottom: 6px;">🎉</span>
-                <span style="font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #047857; display: block;">
+                <span style="font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #047857; display: block; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
                   Pase VIP Autorizado & Confirmado
                 </span>
-                <h2 style="color: #065f46; margin: 6px 0 0 0; font-size: 22px; font-weight: 900;">
+                <h2 style="color: #065f46; margin: 6px 0 0 0; font-size: 22px; font-weight: 900; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
                   ¡Todo Listo, ${guest.fullName}!
                 </h2>
-                <p style="color: #047857; font-size: 13px; margin: 6px 0 0 0;">
+                <p style="color: #047857; font-size: 13px; margin: 6px 0 0 0; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
                   Tu mesa y beneficios exclusivos están oficialmente reservados.
                 </p>
               </div>
 
-              <p style="color: #475569; font-size: 15px; line-height: 1.6; margin-top: 0; margin-bottom: 22px;">
+              <p style="color: #475569; font-size: 15px; line-height: 1.6; margin-top: 0; margin-bottom: 22px; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
                 Nos alegra inmensamente contar con tu presencia para brindar por los logros alcanzados y dar la bienvenida al nuevo año como la gran familia que somos.
               </p>
               
               <!-- Tarjeta de Beneficios y Detalles -->
-              <div style="background-color: #faf8f5; border: 1px solid #ebd9c8; border-radius: 20px; padding: 24px; margin: 24px 0;">
-                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+              <div style="background-color: #faf8f5; border: 1px solid #ebd9c8; border-radius: 20px; padding: 22px; margin: 24px 0;">
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
                   <tr>
-                    <td style="padding-bottom: 12px; font-size: 14px; color: #334155;">
-                      <strong>👤 Colaborador(a):</strong> ${guest.fullName}
+                    <td style="padding: 7px 0; font-size: 14px; color: #334155; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
+                      <span style="display: inline-block; width: 22px;">👤</span>
+                      <span style="font-weight: 700; color: #1e293b;">Colaborador(a):</span>
+                      <span style="color: #0f172a; margin-left: 6px;">${guest.fullName}</span>
                     </td>
                   </tr>
                   ${
                     guest.cedula
                       ? `
                   <tr>
-                    <td style="padding-bottom: 12px; font-size: 14px; color: #334155;">
-                      <strong>🆔 Cédula / Identificación:</strong> <span style="background-color: #ffffff; padding: 3px 8px; border-radius: 6px; border: 1px solid #cbd5e1; font-family: monospace; font-weight: bold; color: #0f172a;">${guest.cedula}</span>
+                    <td style="padding: 7px 0; font-size: 14px; color: #334155; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
+                      <span style="display: inline-block; width: 22px;">🆔</span>
+                      <span style="font-weight: 700; color: #1e293b;">Cédula / Identificación:</span>
+                      <span style="background-color: #ffffff; padding: 2px 8px; border-radius: 6px; border: 1px solid #cbd5e1; font-family: 'Consolas', 'Courier New', monospace; font-weight: 700; color: #0f172a; margin-left: 6px;">${guest.cedula}</span>
                     </td>
                   </tr>`
                       : ''
@@ -120,34 +134,44 @@ export async function sendConfirmationEmail(
                     guest.area
                       ? `
                   <tr>
-                    <td style="padding-bottom: 12px; font-size: 14px; color: #334155;">
-                      <strong>🏢 Área:</strong> <span style="background-color: #ecfdf5; padding: 3px 8px; border-radius: 6px; border: 1px solid #a7f3d0; font-weight: bold; color: #047857;">${guest.area}</span>
+                    <td style="padding: 7px 0; font-size: 14px; color: #334155; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
+                      <span style="display: inline-block; width: 22px;">🏢</span>
+                      <span style="font-weight: 700; color: #1e293b;">Área:</span>
+                      <span style="background-color: #ecfdf5; padding: 2px 10px; border-radius: 6px; border: 1px solid #a7f3d0; font-weight: 700; color: #047857; margin-left: 6px; font-size: 13px;">${guest.area}</span>
                     </td>
                   </tr>`
                       : ''
                   }
                   <tr>
-                    <td style="padding-bottom: 12px; font-size: 14px; color: #334155;">
-                      <strong>📅 Fecha:</strong> ${config.eventDate} (Viernes)
+                    <td style="padding: 7px 0; font-size: 14px; color: #334155; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
+                      <span style="display: inline-block; width: 22px;">📅</span>
+                      <span style="font-weight: 700; color: #1e293b;">Fecha:</span>
+                      <span style="color: #0f172a; margin-left: 6px;">${config.eventDate} (Viernes)</span>
                     </td>
                   </tr>
                   <tr>
-                    <td style="padding-bottom: 12px; font-size: 14px; color: #334155;">
-                      <strong>⏰ Hora:</strong> ${config.eventTime} hrs (7:00 PM)
+                    <td style="padding: 7px 0; font-size: 14px; color: #334155; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
+                      <span style="display: inline-block; width: 22px;">⏰</span>
+                      <span style="font-weight: 700; color: #1e293b;">Hora:</span>
+                      <span style="color: #0f172a; margin-left: 6px;">${config.eventTime} hrs (7:00 PM)</span>
                     </td>
                   </tr>
                   <tr>
-                    <td style="padding-bottom: 12px; font-size: 14px; color: #334155;">
-                      <strong>📍 Salón:</strong> ${config.locationName} (${config.locationAddress})
+                    <td style="padding: 7px 0; font-size: 14px; color: #334155; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
+                      <span style="display: inline-block; width: 22px;">📍</span>
+                      <span style="font-weight: 700; color: #1e293b;">Salón:</span>
+                      <span style="color: #0f172a; margin-left: 6px;">${config.locationName} (${config.locationAddress})</span>
                     </td>
                   </tr>
                   <tr>
-                    <td style="padding-bottom: 12px; font-size: 14px; color: #334155;">
-                      <strong>👔 Código de Vestimenta:</strong> ${config.dressCode || 'Como mejor te sientas'}
+                    <td style="padding: 7px 0; font-size: 14px; color: #334155; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
+                      <span style="display: inline-block; width: 22px;">👔</span>
+                      <span style="font-weight: 700; color: #1e293b;">Código de Vestimenta:</span>
+                      <span style="color: #0f172a; margin-left: 6px;">${config.dressCode || 'Como mejor te sientas'}</span>
                     </td>
                   </tr>
                   <tr>
-                    <td style="padding-top: 6px; border-top: 1px dashed #cbd5e1; font-size: 13px; color: #005CA9; font-weight: bold;">
+                    <td style="padding-top: 12px; margin-top: 6px; border-top: 1px dashed #cbd5e1; font-size: 13px; color: #005CA9; font-weight: 700; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
                       ✨ Incluye: Cena de Gala + Estación de Helados + Boleta de Rifas
                     </td>
                   </tr>
@@ -156,11 +180,11 @@ export async function sendConfirmationEmail(
 
               <!-- Botón Principal -->
               <div style="text-align: center; margin: 32px 0 16px 0;">
-                <a href="${validPassUrl}" style="background-color: #E30613; color: #ffffff; padding: 18px 38px; text-decoration: none; border-radius: 16px; font-weight: 800; font-size: 15px; display: inline-block; box-shadow: 0 6px 18px rgba(227, 6, 19, 0.28); letter-spacing: 0.3px;">
+                <a href="${validPassUrl}" style="background-color: #E30613; color: #ffffff; padding: 18px 38px; text-decoration: none; border-radius: 16px; font-weight: 800; font-size: 15px; display: inline-block; box-shadow: 0 6px 18px rgba(227, 6, 19, 0.28); letter-spacing: 0.3px; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
                   Abrir Mi Pase Digital con Código QR
                 </a>
               </div>
-              <p style="text-align: center; color: #64748b; font-size: 12px; margin: 0 0 12px 0;">
+              <p style="text-align: center; color: #64748b; font-size: 12px; margin: 0 0 12px 0; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
                 💡 Presenta el código QR desde tu celular al llegar a la entrada para registrar tu ingreso.
               </p>
             </td>
@@ -168,11 +192,11 @@ export async function sendConfirmationEmail(
 
           <!-- Footer con Firma de Marca Obligatoria -->
           <tr>
-            <td style="background-color: #f8fafc; padding: 26px 20px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0;">
-              <p style="margin: 0 0 8px 0; font-weight: 700; color: #1e293b;">
+            <td style="background-color: #f8fafc; padding: 26px 20px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
+              <p style="margin: 0 0 8px 0; font-weight: 700; color: #1e293b; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
                 ${config.companyName} &bull; Endulzando cada momento juntos
               </p>
-              <p style="margin: 0; font-size: 11px; color: #64748b;">
+              <p style="margin: 0; font-size: 11px; color: #64748b; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
                 Desarrollado con amor en Medellín .Co por <strong>Lenipseart Developer</strong> - Contacto: 320 804 8128 (WhatsApp)
               </p>
             </td>
@@ -229,9 +253,19 @@ export async function sendInvitationEmail(
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Invitación Especial - ${config.eventName}</title>
+        <style type="text/css">
+          body, table, td, p, a, span, div, strong, b {
+            font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif !important;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+          }
+          strong, b {
+            font-weight: 700 !important;
+          }
+        </style>
       </head>
-      <body style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #faf8f5; margin: 0; padding: 24px; color: #1e293b;">
-        <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 28px; overflow: hidden; box-shadow: 0 12px 35px rgba(0,0,0,0.06); border: 1px solid #ebd9c8;">
+      <body style="font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif; background-color: #faf8f5; margin: 0; padding: 24px; color: #1e293b; -webkit-font-smoothing: antialiased;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 28px; overflow: hidden; box-shadow: 0 12px 35px rgba(0,0,0,0.06); border: 1px solid #ebd9c8; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
           <!-- Franja superior festiva -->
           <tr>
             <td style="height: 6px; background: linear-gradient(90deg, #E30613 0%, #D4AF37 50%, #005CA9 100%);"></td>
@@ -239,14 +273,14 @@ export async function sendInvitationEmail(
 
           <!-- Header con Logo Oficial y Franja Roja Crem Helado -->
           <tr>
-            <td style="background-color: #ffffff; padding: 32px 24px 20px 24px; text-align: center;">
+            <td style="background-color: #ffffff; padding: 32px 24px 20px 24px; text-align: center; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
               <img src="${logoUrl}" alt="${config.companyName}" width="170" style="display: block; margin: 0 auto 14px auto; max-width: 170px; height: auto;" />
               <div style="display: inline-block; background-color: #fef2f2; border: 1px solid #fecaca; padding: 4px 14px; border-radius: 20px;">
-                <span style="color: #E30613; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;">
+                <span style="color: #E30613; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
                   Invitación Especial &bull; Fin de Año 2026
                 </span>
               </div>
-              <h1 style="color: #0f172a; margin: 12px 0 0 0; font-size: 20px; font-weight: 800; letter-spacing: -0.3px;">
+              <h1 style="color: #0f172a; margin: 12px 0 0 0; font-size: 20px; font-weight: 800; letter-spacing: -0.3px; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
                 ${config.eventName}
               </h1>
             </td>
@@ -254,39 +288,47 @@ export async function sendInvitationEmail(
 
           <!-- Contenido Principal -->
           <tr>
-            <td style="padding: 24px 32px 36px 32px;">
-              <h2 style="color: #0f172a; margin-top: 0; margin-bottom: 12px; font-size: 22px; font-weight: 900;">
+            <td style="padding: 24px 32px 36px 32px; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
+              <h2 style="color: #0f172a; margin-top: 0; margin-bottom: 12px; font-size: 22px; font-weight: 900; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
                 ¡Hola, ${guest.fullName}! 🍨
               </h2>
-              <p style="color: #475569; font-size: 15px; line-height: 1.6; margin-top: 0; margin-bottom: 22px;">
+              <p style="color: #475569; font-size: 15px; line-height: 1.6; margin-top: 0; margin-bottom: 22px; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
                 ${config.motivationalMessage}
               </p>
               
               <!-- Tarjeta Resumen del Evento -->
-              <div style="background-color: #faf8f5; border: 1px solid #ebd9c8; border-radius: 20px; padding: 24px; margin: 24px 0;">
-                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+              <div style="background-color: #faf8f5; border: 1px solid #ebd9c8; border-radius: 20px; padding: 22px; margin: 24px 0;">
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
                   <tr>
-                    <td style="padding-bottom: 10px; font-size: 14px; color: #334155;">
-                      📅 <strong>Fecha:</strong> ${config.eventDate} (Viernes)
+                    <td style="padding: 7px 0; font-size: 14px; color: #334155; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
+                      <span style="display: inline-block; width: 22px;">📅</span>
+                      <span style="font-weight: 700; color: #1e293b;">Fecha:</span>
+                      <span style="color: #0f172a; margin-left: 6px;">${config.eventDate} (Viernes)</span>
                     </td>
                   </tr>
                   <tr>
-                    <td style="padding-bottom: 10px; font-size: 14px; color: #334155;">
-                      ⏰ <strong>Hora:</strong> ${config.eventTime} hrs (7:00 PM)
+                    <td style="padding: 7px 0; font-size: 14px; color: #334155; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
+                      <span style="display: inline-block; width: 22px;">⏰</span>
+                      <span style="font-weight: 700; color: #1e293b;">Hora:</span>
+                      <span style="color: #0f172a; margin-left: 6px;">${config.eventTime} hrs (7:00 PM)</span>
                     </td>
                   </tr>
                   <tr>
-                    <td style="padding-bottom: 10px; font-size: 14px; color: #334155;">
-                      📍 <strong>Lugar:</strong> ${config.locationName} (${config.locationAddress})
+                    <td style="padding: 7px 0; font-size: 14px; color: #334155; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
+                      <span style="display: inline-block; width: 22px;">📍</span>
+                      <span style="font-weight: 700; color: #1e293b;">Lugar:</span>
+                      <span style="color: #0f172a; margin-left: 6px;">${config.locationName} (${config.locationAddress})</span>
                     </td>
                   </tr>
                   <tr>
-                    <td style="padding-bottom: 10px; font-size: 14px; color: #334155;">
-                      👔 <strong>Código de Vestimenta:</strong> ${config.dressCode || 'Como mejor te sientas'}
+                    <td style="padding: 7px 0; font-size: 14px; color: #334155; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
+                      <span style="display: inline-block; width: 22px;">👔</span>
+                      <span style="font-weight: 700; color: #1e293b;">Código de Vestimenta:</span>
+                      <span style="color: #0f172a; margin-left: 6px;">${config.dressCode || 'Como mejor te sientas'}</span>
                     </td>
                   </tr>
                   <tr>
-                    <td style="padding-top: 6px; border-top: 1px dashed #cbd5e1; font-size: 13px; color: #005CA9; font-weight: bold;">
+                    <td style="padding-top: 12px; margin-top: 6px; border-top: 1px dashed #cbd5e1; font-size: 13px; color: #005CA9; font-weight: 700; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
                       ✨ Cóctel de bienvenida, Cena de gala, Estación de helados y Rifas
                     </td>
                   </tr>
@@ -295,11 +337,11 @@ export async function sendInvitationEmail(
 
               <!-- Botón Principal -->
               <div style="text-align: center; margin: 34px 0 16px 0;">
-                <a href="${validInvitationUrl}" style="background-color: #E30613; color: #ffffff; padding: 18px 38px; text-decoration: none; border-radius: 16px; font-weight: 800; font-size: 15px; display: inline-block; box-shadow: 0 6px 18px rgba(227, 6, 19, 0.28); letter-spacing: 0.3px;">
+                <a href="${validInvitationUrl}" style="background-color: #E30613; color: #ffffff; padding: 18px 38px; text-decoration: none; border-radius: 16px; font-weight: 800; font-size: 15px; display: inline-block; box-shadow: 0 6px 18px rgba(227, 6, 19, 0.28); letter-spacing: 0.3px; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
                   Confirmar Asistencia & Obtener Pase VIP
                 </a>
               </div>
-              <p style="text-align: center; color: #64748b; font-size: 12px; margin: 0;">
+              <p style="text-align: center; color: #64748b; font-size: 12px; margin: 0; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
                 Por favor confirma con anticipación para asegurar tu cupo y beneficios.
               </p>
             </td>
@@ -307,11 +349,11 @@ export async function sendInvitationEmail(
 
           <!-- Footer con Firma de Marca Obligatoria -->
           <tr>
-            <td style="background-color: #f8fafc; padding: 26px 20px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0;">
-              <p style="margin: 0 0 8px 0; font-weight: 700; color: #1e293b;">
+            <td style="background-color: #f8fafc; padding: 26px 20px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
+              <p style="margin: 0 0 8px 0; font-weight: 700; color: #1e293b; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
                 ${config.companyName} &bull; La Gran Familia
               </p>
-              <p style="margin: 0; font-size: 11px; color: #64748b;">
+              <p style="margin: 0; font-size: 11px; color: #64748b; font-family: 'Segoe UI', Arial, Roboto, -apple-system, sans-serif;">
                 Desarrollado con amor en Medellín .Co por <strong>Lenipseart Developer</strong> - Contacto: 320 804 8128 (WhatsApp)
               </p>
             </td>

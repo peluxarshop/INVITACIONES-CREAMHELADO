@@ -12,6 +12,9 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const resolvedParams = await params;
+  const ogImageUrl = 'https://meals.peluxar.com/og-cremhelado.jpg';
+  const pageUrl = `https://meals.peluxar.com/invitacion/${resolvedParams.id}`;
+
   return {
     title: 'Invitación Especial - Fiesta de Fin de Año | Crem Helado',
     description: 'Tienes una invitación muy especial para celebrar con nosotros. Confirma tu asistencia aquí.',
@@ -23,21 +26,26 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title: '🎉 Tienes una Invitación Especial | Crem Helado',
       description: 'Confirma tu asistencia y obtén tu pase digital VIP para la gran fiesta de empresa.',
+      url: pageUrl,
+      siteName: 'Crem Helado Eventos',
       images: [
         {
-          url: '/og-cremhelado.jpg',
+          url: ogImageUrl,
+          secureUrl: ogImageUrl,
           width: 1200,
           height: 630,
+          type: 'image/jpeg',
           alt: 'Invitación Especial Crem Helado',
         },
       ],
       type: 'website',
+      locale: 'es_CO',
     },
     twitter: {
       card: 'summary_large_image',
       title: '🎉 Tienes una Invitación Especial | Crem Helado',
       description: 'Confirma tu asistencia y obtén tu pase digital VIP para la gran fiesta de empresa.',
-      images: ['/og-cremhelado.jpg'],
+      images: [ogImageUrl],
     },
   };
 }

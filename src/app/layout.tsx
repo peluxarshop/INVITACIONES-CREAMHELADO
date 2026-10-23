@@ -24,6 +24,7 @@ const lilitaOne = Lilita_One({
 });
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://meals.peluxar.com';
+const ogImageUrl = 'https://meals.peluxar.com/og-cremhelado.jpg';
 
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl),
@@ -44,9 +45,11 @@ export const metadata: Metadata = {
     siteName: 'Crem Helado Eventos',
     images: [
       {
-        url: '/og-cremhelado.jpg',
+        url: ogImageUrl,
+        secureUrl: ogImageUrl,
         width: 1200,
         height: 630,
+        type: 'image/jpeg',
         alt: 'Invitación Especial Fiesta Crem Helado 2026',
       },
     ],
@@ -57,7 +60,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: '🎉 Tienes una Invitación Especial | Crem Helado',
     description: 'Confirma tu asistencia y descarga tu Pase Digital VIP para la gran fiesta de empresa.',
-    images: ['/og-cremhelado.jpg'],
+    images: [ogImageUrl],
   },
 };
 
