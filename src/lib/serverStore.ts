@@ -48,21 +48,49 @@ export async function serverGetGuests(): Promise<Guest[]> {
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (!error && data && data.length > 0) {
-        return data.map((item: any) => ({
-          id: item.id,
-          fullName: item.full_name,
-          firstName: item.first_name,
-          lastName: item.last_name,
-          phone: item.phone,
-          email: item.email,
-          status: item.status as GuestStatus,
-          cedula: item.cedula,
-          area: item.area,
-          confirmedAt: item.confirmed_at,
-          notes: item.notes,
-          createdAt: item.created_at,
-        }));
+      if (error) {
+        console.error('❌ Error de Supabase al consultar "guests":', error.message || error);
+      } else if (data) {
+        if (data.length > 0) {
+          return data.map((item: any) => ({
+            id: item.id,
+            fullName: item.full_name,
+            firstName: item.first_name,
+            lastName: item.last_name,
+            phone: item.phone,
+            email: item.email,
+            status: item.status as GuestStatus,
+            cedula: item.cedula,
+            area: item.area,
+            confirmedAt: item.confirmed_at,
+            notes: item.notes,
+            createdAt: item.created_at,
+          }));
+        } else {
+          // Si Supabase está conectado pero la tabla está vacía, intentamos poblarla automáticamente
+          console.log('ℹ️ Tabla "guests" en Supabase está vacía. Sembrando datos iniciales...');
+          const initialGuests = loadFromFile();
+          try {
+            const rowsToInsert = initialGuests.map((g) => ({
+              id: g.id,
+              full_name: g.fullName,
+              first_name: g.firstName || g.fullName.split(' ')[0],
+              last_name: g.lastName || g.fullName.split(' ').slice(1).join(' '),
+              phone: g.phone,
+              email: g.email,
+              status: g.status,
+              cedula: g.cedula || null,
+              area: g.area || null,
+              notes: g.notes || null,
+              confirmed_at: g.confirmedAt || null,
+              created_at: g.createdAt || new Date().toISOString(),
+            }));
+            await supabase.from('guests').upsert(rowsToInsert);
+          } catch (seedErr: any) {
+            console.warn('No se pudo autosembrar guests en Supabase:', seedErr?.message);
+          }
+          return initialGuests;
+        }
       }
     } catch (err) {
       console.warn('Error leyendo invitados de Supabase en el servidor:', err);
@@ -336,7 +364,9 @@ export async function serverGetEventConfig(): Promise<EventConfig> {
         .limit(1)
         .maybeSingle();
 
-      if (!error && data) {
+      if (error) {
+        console.error('❌ Error de Supabase al consultar "event_config":', error.message || error);
+      } else if (data) {
         const mapped: EventConfig = {
           id: data.id,
           eventName: data.event_name || memoryConfig.eventName,
