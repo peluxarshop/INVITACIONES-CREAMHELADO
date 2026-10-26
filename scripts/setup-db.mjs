@@ -59,6 +59,8 @@ async function run() {
     console.log('⚙️ Ejecutando script de creación de tablas e índices (schema.sql)...');
     await client.query(sql);
     await client.query("UPDATE event_config SET logo_url = '/logo-cremhelado.png' WHERE logo_url IS NULL OR logo_url = '' OR logo_url LIKE '%wikimedia%';");
+    await client.query("ALTER TABLE event_config ADD COLUMN IF NOT EXISTS event_end_time TIME DEFAULT '18:00:00';");
+    await client.query("UPDATE event_config SET event_time = '14:00:00', event_end_time = '18:00:00' WHERE event_time = '19:00:00';");
     console.log('✅ Tablas "event_config" y "guests" creadas exitosamente.');
     console.log('✅ Políticas de seguridad (RLS) habilitadas.');
     console.log('✅ Índices de búsqueda por teléfono, cédula y estado creados.');

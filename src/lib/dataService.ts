@@ -6,7 +6,7 @@ import defaultGuests from '@/data/guests.json';
 export const DEFAULT_CONFIG: EventConfig = defaultEventConfig as EventConfig;
 export const INITIAL_MOCK_GUESTS: Guest[] = defaultGuests as Guest[];
 
-const CONFIG_STORAGE_KEY = 'cremhelado_event_config_v2';
+const CONFIG_STORAGE_KEY = 'cremhelado_event_config_v3';
 const GUESTS_STORAGE_KEY = 'cremhelado_guests_list_v2';
 
 function sanitizeDressCode(dressCode?: string): string {
@@ -99,6 +99,7 @@ export async function fetchEventConfig(): Promise<EventConfig> {
           companyName: data.company_name || DEFAULT_CONFIG.companyName,
           eventDate: data.event_date || DEFAULT_CONFIG.eventDate,
           eventTime: (data.event_time || DEFAULT_CONFIG.eventTime).slice(0, 5),
+          eventEndTime: data.event_end_time ? data.event_end_time.slice(0, 5) : (DEFAULT_CONFIG.eventEndTime || '18:00'),
           locationName: data.location_name || DEFAULT_CONFIG.locationName,
           locationAddress: data.location_address || DEFAULT_CONFIG.locationAddress,
           mapsUrl: data.maps_url || DEFAULT_CONFIG.mapsUrl,

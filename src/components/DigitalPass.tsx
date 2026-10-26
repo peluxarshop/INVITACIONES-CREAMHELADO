@@ -20,6 +20,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { EventConfig, Guest } from '@/types';
 import { LogoOutlined, StitchedCard } from '@/components/festive/Festive';
+import { formatEventSchedule } from '@/lib/timeUtils';
 
 interface DigitalPassProps {
   guest: Guest;
@@ -62,8 +63,9 @@ export const DigitalPass: React.FC<DigitalPassProps> = ({ guest, config }) => {
     );
     const location = encodeURIComponent(`${config.locationName}, ${config.locationAddress}`);
     const dateFormatted = config.eventDate.replace(/-/g, '');
-    const startTime = config.eventTime.replace(':', '') + '00';
-    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dateFormatted}T${startTime}/${dateFormatted}T235900&details=${details}&location=${location}`;
+    const startTime = (config.eventTime || '14:00').replace(':', '').slice(0, 4) + '00';
+    const endTime = (config.eventEndTime || '18:00').replace(':', '').slice(0, 4) + '00';
+    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dateFormatted}T${startTime}/${dateFormatted}T${endTime}&details=${details}&location=${location}`;
   };
 
   const handleCopyLink = () => {
@@ -133,7 +135,7 @@ export const DigitalPass: React.FC<DigitalPassProps> = ({ guest, config }) => {
               </div>
               <div>
                 <p className="font-bold text-slate-900 capitalize">{formatDate(config.eventDate)}</p>
-                <p className="text-slate-500 text-xs">Hora: {config.eventTime} hrs (7:00 PM)</p>
+                <p className="text-slate-500 text-xs">Horario: {formatEventSchedule(config.eventTime, config.eventEndTime)}</p>
               </div>
             </div>
 

@@ -357,6 +357,7 @@ export async function serverGetEventConfig(): Promise<EventConfig> {
           companyName: data.company_name || memoryConfig.companyName,
           eventDate: data.event_date || memoryConfig.eventDate,
           eventTime: (data.event_time || memoryConfig.eventTime).slice(0, 5),
+          eventEndTime: data.event_end_time ? data.event_end_time.slice(0, 5) : (memoryConfig.eventEndTime || '18:00'),
           locationName: data.location_name || memoryConfig.locationName,
           locationAddress: data.location_address || memoryConfig.locationAddress,
           mapsUrl: data.maps_url || memoryConfig.mapsUrl,
@@ -390,6 +391,7 @@ export async function serverSaveEventConfig(config: EventConfig): Promise<EventC
         company_name: config.companyName,
         event_date: config.eventDate,
         event_time: config.eventTime,
+        event_end_time: config.eventEndTime || '18:00',
         location_name: config.locationName,
         location_address: config.locationAddress,
         maps_url: config.mapsUrl,
@@ -405,13 +407,24 @@ export async function serverSaveEventConfig(config: EventConfig): Promise<EventC
       };
 
       if (config.id) {
-        const { error } = await supabase.from('event_config').update(payload).eq('id', config.id);
+        let { error } = await supabase.from('event_config').update(payload).eq('id', config.id);
+        if (error && (error.message?.includes('event_end_time') || error.details?.includes('event_end_time'))) {
+          const { event_end_time, ...fallbackPayload } = payload;
+          const retry = await supabase.from('event_config').update(fallbackPayload).eq('id', config.id);
+          error = retry.error;
+        }
         if (error) {
           console.error('❌ Error actualizando event_config en Supabase:', error);
           throw new Error(`Error en Supabase: ${error.message}`);
         }
       } else {
-        const { data, error } = await supabase.from('event_config').insert([payload]).select().single();
+        let { data, error } = await supabase.from('event_config').insert([payload]).select().single();
+        if (error && (error.message?.includes('event_end_time') || error.details?.includes('event_end_time'))) {
+          const { event_end_time, ...fallbackPayload } = payload;
+          const retry = await supabase.from('event_config').insert([fallbackPayload]).select().single();
+          data = retry.data;
+          error = retry.error;
+        }
         if (error) {
           console.error('❌ Error insertando event_config en Supabase:', error);
           throw new Error(`Error en Supabase: ${error.message}`);
@@ -420,7 +433,8 @@ export async function serverSaveEventConfig(config: EventConfig): Promise<EventC
       }
     } catch (err: any) {
       console.warn('Error guardando event_config en Supabase:', err?.message || err);
-      throw err;
+      // Si la persistencia local en JSON ya funcionó, no quebramos la app si la base externa falla
+      return config;
     }
   }
 

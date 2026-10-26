@@ -16,6 +16,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { EventConfig } from '@/types';
+import { formatEventSchedule } from '@/lib/timeUtils';
 
 interface AdminEventConfigProps {
   initialConfig: EventConfig;
@@ -155,18 +156,47 @@ export const AdminEventConfig: React.FC<AdminEventConfigProps> = ({
             />
           </div>
 
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
-              <FontAwesomeIcon icon={faClock} className="text-[#E30613]" />
-              <span>Hora de Inicio *</span>
-            </label>
-            <input
-              type="time"
-              required
-              value={config.eventTime}
-              onChange={(e) => handleChange('eventTime', e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs sm:text-sm focus:outline-none focus:border-[#E30613] focus:bg-white"
-            />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
+                <FontAwesomeIcon icon={faClock} className="text-[#E30613]" />
+                <span>Hora Inicio *</span>
+              </label>
+              <input
+                type="time"
+                required
+                value={config.eventTime}
+                onChange={(e) => handleChange('eventTime', e.target.value)}
+                className="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs sm:text-sm focus:outline-none focus:border-[#E30613] focus:bg-white"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
+                <FontAwesomeIcon icon={faClock} className="text-emerald-600" />
+                <span>Hora Cierre</span>
+              </label>
+              <input
+                type="time"
+                value={config.eventEndTime || ''}
+                onChange={(e) => handleChange('eventEndTime', e.target.value)}
+                placeholder="18:00"
+                className="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs sm:text-sm focus:outline-none focus:border-[#E30613] focus:bg-white"
+              />
+            </div>
+          </div>
+
+          <div className="sm:col-span-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 p-3 rounded-xl bg-emerald-50/90 border border-emerald-200 text-emerald-950 text-xs">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="font-semibold text-slate-700">Horario visible para invitados:</span>
+              <span className="font-bold text-emerald-800 bg-white px-2.5 py-0.5 rounded-lg border border-emerald-200 shadow-2xs">
+                {formatEventSchedule(config.eventTime, config.eventEndTime)}
+              </span>
+            </div>
+            <span className="text-[11px] text-slate-500">
+              Sincronizado en pases, Google Calendar y correos
+            </span>
           </div>
         </div>
 

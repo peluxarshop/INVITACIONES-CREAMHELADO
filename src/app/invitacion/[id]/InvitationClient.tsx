@@ -21,6 +21,7 @@ import {
 import { EventConfig, Guest } from '@/types';
 import { CountdownTimer } from '@/components/CountdownTimer';
 import { DigitalPass } from '@/components/DigitalPass';
+import { formatEventSchedule } from '@/lib/timeUtils';
 import { RsvpModal } from '@/components/RsvpModal';
 import { Footer } from '@/components/Footer';
 import { SnowEffect } from '@/components/SnowEffect';
@@ -231,8 +232,8 @@ export const InvitationClient: React.FC<InvitationClientProps> = ({
     {
       icon: faClock,
       tone: 'bg-crem-green',
-      label: 'Hora',
-      value: `${config.eventTime} horas (7:00 PM)`,
+      label: 'Horario',
+      value: formatEventSchedule(config.eventTime, config.eventEndTime),
     },
   ];
 

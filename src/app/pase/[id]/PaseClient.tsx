@@ -18,6 +18,7 @@ import {
   faQrcode,
 } from '@fortawesome/free-solid-svg-icons';
 import { EventConfig, Guest } from '@/types';
+import { formatEventSchedule } from '@/lib/timeUtils';
 import { Footer } from '@/components/Footer';
 import { SnowEffect } from '@/components/SnowEffect';
 import {
@@ -214,7 +215,7 @@ export const PaseClient: React.FC<PaseClientProps> = ({ guestId }) => {
                 <div className="flex items-start gap-2.5">
                   <FontAwesomeIcon icon={faCalendarAlt} className="text-crem-red mt-0.5" />
                   <span>
-                    <strong>Fecha:</strong> {config.eventDate} | <strong>Hora:</strong> {config.eventTime} hrs
+                    <strong>Fecha:</strong> {config.eventDate} | <strong>Horario:</strong> {formatEventSchedule(config.eventTime, config.eventEndTime)}
                   </span>
                 </div>
                 <div className="flex items-start gap-2.5">

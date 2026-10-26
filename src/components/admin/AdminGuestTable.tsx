@@ -19,6 +19,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { Guest, GuestStatus, EventConfig } from '@/types';
+import { formatEventSchedule } from '@/lib/timeUtils';
 
 interface AdminGuestTableProps {
   guests: Guest[];
@@ -92,6 +93,8 @@ export const AdminGuestTable: React.FC<AdminGuestTableProps> = ({
     message = message
       .replace(/{nombre}/g, firstName)
       .replace(/{empresa}/g, config.companyName)
+      .replace(/{fecha}/g, config.eventDate)
+      .replace(/{hora}|{horario}/g, formatEventSchedule(config.eventTime, config.eventEndTime))
       .replace(/{link}/g, link);
 
     return `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;

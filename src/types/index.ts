@@ -21,6 +21,7 @@ export interface EventConfig {
   companyName: string;
   eventDate: string;
   eventTime: string;
+  eventEndTime?: string;
   locationName: string;
   locationAddress: string;
   mapsUrl: string;

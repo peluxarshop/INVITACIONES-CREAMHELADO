@@ -1,5 +1,6 @@
 import { Resend } from 'resend';
 import { EventConfig, Guest } from '@/types';
+import { formatEventSchedule } from '@/lib/timeUtils';
 
 function getResendClient(): Resend | null {
   const apiKey =
@@ -53,15 +54,8 @@ function formatEmailDate(dateStr?: string): string {
   return dateStr;
 }
 
-function formatEmailTime(timeStr?: string): string {
-  if (!timeStr) return '';
-  const clean = timeStr.trim().slice(0, 5);
-  const [hStr, mStr] = clean.split(':');
-  const h = parseInt(hStr, 10);
-  if (isNaN(h)) return clean;
-  const ampm = h >= 12 ? 'PM' : 'AM';
-  const h12 = h % 12 || 12;
-  return `${clean} hrs (${h12}:${mStr || '00'} ${ampm})`;
+function formatEmailTime(timeStr?: string, endTimeStr?: string): string {
+  return formatEventSchedule(timeStr, endTimeStr);
 }
 
 export interface SendEmailResult {
@@ -80,7 +74,7 @@ export async function sendConfirmationEmail(
   const validPassUrl = normalizeUrlForEmail(passUrl, `/pase/${guest.id}`);
 
   const formattedDate = formatEmailDate(config.eventDate);
-  const formattedTime = formatEmailTime(config.eventTime);
+  const formattedTime = formatEmailTime(config.eventTime, config.eventEndTime);
 
   const htmlContent = `
     <!DOCTYPE html>
@@ -210,7 +204,7 @@ export async function sendConfirmationEmail(
                                 </td>
                                 <td width="45%" style="vertical-align: top;">
                                   <div style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">
-                                    ⏰ Hora
+                                    ⏰ Horario
                                   </div>
                                   <div style="font-size: 14px; font-weight: 700; color: #0f172a; margin-top: 2px;">
                                     ${formattedTime}
@@ -329,7 +323,7 @@ export async function sendInvitationEmail(
   const validInvitationUrl = normalizeUrlForEmail(invitationUrl, `/invitacion/${guest.id}`);
 
   const formattedDate = formatEmailDate(config.eventDate);
-  const formattedTime = formatEmailTime(config.eventTime);
+  const formattedTime = formatEmailTime(config.eventTime, config.eventEndTime);
 
   const htmlContent = `
     <!DOCTYPE html>
@@ -429,7 +423,7 @@ export async function sendInvitationEmail(
                                 </td>
                                 <td width="45%" style="vertical-align: top;">
                                   <div style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">
-                                    ⏰ Hora
+                                    ⏰ Horario
                                   </div>
                                   <div style="font-size: 14px; font-weight: 700; color: #0f172a; margin-top: 2px;">
                                     ${formattedTime}

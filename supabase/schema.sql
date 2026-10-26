@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS event_config (
   event_name TEXT NOT NULL DEFAULT 'Gran Fiesta de Fin de Año & Despedida',
   company_name TEXT NOT NULL DEFAULT 'Cream Helado',
   event_date DATE NOT NULL DEFAULT (CURRENT_DATE + INTERVAL '30 days'),
-  event_time TIME NOT NULL DEFAULT '19:00:00',
+  event_time TIME NOT NULL DEFAULT '14:00:00',
+  event_end_time TIME DEFAULT '18:00:00',
   location_name TEXT NOT NULL DEFAULT 'Centro de Eventos & Convenciones',
   location_address TEXT NOT NULL DEFAULT 'Calle 10 # 43E-10, El Poblado, Medellín',
   maps_url TEXT NOT NULL DEFAULT 'https://maps.google.com',
@@ -69,6 +70,7 @@ INSERT INTO event_config (
   company_name,
   event_date,
   event_time,
+  event_end_time,
   location_name,
   location_address,
   maps_url,
@@ -81,7 +83,8 @@ SELECT
   'Gran Fiesta de Despedida & Celebración 2026',
   'Cream Helado',
   (CURRENT_DATE + INTERVAL '25 days'),
-  '19:00:00',
+  '14:00:00',
+  '18:00:00',
   'Gran Salón de Eventos El Poblado',
   'Carrera 43A # 1Sur-188, Medellín, Antioquia',
   'https://maps.google.com/?q=Medellin+Colombia',
@@ -90,3 +93,6 @@ SELECT
   '#E11D48',
   '#D97706'
 WHERE NOT EXISTS (SELECT 1 FROM event_config LIMIT 1);
+
+-- Asegurar columna event_end_time en instalaciones existentes
+ALTER TABLE event_config ADD COLUMN IF NOT EXISTS event_end_time TIME DEFAULT '18:00:00';

@@ -17,7 +17,7 @@ interface TimeLeft {
 
 export const CountdownTimer: React.FC<CountdownTimerProps> = ({
   targetDate,
-  targetTime = '19:00',
+  targetTime = '14:00',
 }) => {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
     days: 0,
@@ -31,7 +31,10 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
   useEffect(() => {
     setMounted(true);
     const calculateTime = () => {
-      const target = new Date(`${targetDate}T${targetTime}:00`);
+      const cleanTime = targetTime.includes(':')
+        ? (targetTime.length === 5 ? `${targetTime}:00` : targetTime)
+        : `${targetTime}:00`;
+      const target = new Date(`${targetDate}T${cleanTime}`);
       const now = new Date();
       const diff = target.getTime() - now.getTime();
 
