@@ -22,6 +22,7 @@ import { EventConfig, Guest } from '@/types';
 import { CountdownTimer } from '@/components/CountdownTimer';
 import { DigitalPass } from '@/components/DigitalPass';
 import { formatEventSchedule } from '@/lib/timeUtils';
+import { isGenericGuestName } from '@/lib/guestValidation';
 import { RsvpModal } from '@/components/RsvpModal';
 import { Footer } from '@/components/Footer';
 import { SnowEffect } from '@/components/SnowEffect';
@@ -174,16 +175,30 @@ export const InvitationClient: React.FC<InvitationClientProps> = ({
     }
   };
 
-  const handleDecline = async (reason?: string) => {
+  const handleDecline = async (data: {
+    fullName: string;
+    cedula: string;
+    area?: string;
+    reason?: string;
+  }) => {
     if (!guest) return;
-    const updated = await updateGuestStatus(guest.id, 'declined', { notes: reason });
+    const updated = await updateGuestStatus(guest.id, 'declined', {
+      fullName: data.fullName,
+      cedula: data.cedula,
+      area: data.area,
+      notes: data.reason,
+    });
     if (updated) {
       setGuest(updated);
     } else {
       setGuest({
         ...guest,
         status: 'declined',
-        notes: reason,
+        fullName: data.fullName,
+        firstName: data.fullName.split(' ')[0],
+        cedula: data.cedula,
+        area: data.area,
+        notes: data.reason,
       });
     }
   };
@@ -219,8 +234,9 @@ export const InvitationClient: React.FC<InvitationClientProps> = ({
     );
   }
 
-  const displayName = guest?.fullName || 'Invitado(a) Especial';
-  const firstName = guest?.firstName || displayName.split(' ')[0];
+  const isGeneric = isGenericGuestName(guest?.fullName);
+  const displayName = (!isGeneric && guest?.fullName) ? guest.fullName : 'Invitado(a) Especial';
+  const firstName = isGeneric ? 'Apreciado(a) Colaborador(a)' : (guest?.firstName || displayName.split(' ')[0]);
 
   const details = [
     {
@@ -470,9 +486,21 @@ export const InvitationClient: React.FC<InvitationClientProps> = ({
               <FontAwesomeIcon icon={faHeart} />
             </div>
             <h3 className="font-display text-3xl text-slate-900 leading-none">Respuesta registrada</h3>
-            <p className="text-sm text-slate-600 leading-relaxed max-w-md mx-auto mt-3">
-              Indicaste que no podrás acompañarnos. ¡Te extrañaremos, pero agradecemos tu compromiso constante
-              con la familia Crem Helado!
+            
+            {/* Ficha de trazabilidad de la novedad */}
+            <div className="my-4 p-4 rounded-2xl bg-[#FAF6EE] border border-[#e5d8c3] max-w-sm mx-auto text-left space-y-1.5 text-xs text-slate-700 shadow-xs">
+              <div className="flex justify-between items-center pb-2 mb-2 border-b border-[#e5d8c3]">
+                <span className="font-bold uppercase tracking-wider text-slate-500 text-[10px]">Novedad Registrada</span>
+                <span className="font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200 text-[10px]">No Asistirá</span>
+              </div>
+              <p><strong className="text-slate-900">Colaborador:</strong> {guest.fullName}</p>
+              {guest.cedula && <p><strong className="text-slate-900">C.C. / Documento:</strong> {guest.cedula}</p>}
+              {guest.area && <p><strong className="text-slate-900">Área:</strong> {guest.area}</p>}
+              {guest.notes && <p className="text-slate-500 italic mt-1">&quot;{guest.notes}&quot;</p>}
+            </div>
+
+            <p className="text-sm text-slate-600 leading-relaxed max-w-md mx-auto mt-2">
+              Indicaste que no podrás acompañarnos. ¡Te extrañaremos, pero agradecemos haber notificado oportunamente a la empresa!
             </p>
 
             <div className="mt-6 pt-5 border-t-2 border-dashed border-slate-200">

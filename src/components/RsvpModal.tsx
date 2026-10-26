@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -12,9 +12,15 @@ import {
   faHeart,
   faExclamationCircle,
   faBuilding,
+  faInfoCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { Guest } from '@/types';
 import { StitchedCard } from '@/components/festive/Festive';
+import {
+  sanitizeInitialGuestName,
+  validateGuestFullName,
+  validateGuestCedula,
+} from '@/lib/guestValidation';
 
 interface RsvpModalProps {
   isOpen: boolean;
@@ -23,7 +29,7 @@ interface RsvpModalProps {
   companyName: string;
   onClose: () => void;
   onConfirmSuccess: (data: { fullName: string; cedula: string; email: string; area: string }) => Promise<void>;
-  onDeclineSuccess: (reason?: string) => Promise<void>;
+  onDeclineSuccess: (data: { fullName: string; cedula: string; area?: string; reason?: string }) => Promise<void>;
 }
 
 export const RsvpModal: React.FC<RsvpModalProps> = ({
@@ -35,13 +41,24 @@ export const RsvpModal: React.FC<RsvpModalProps> = ({
   onConfirmSuccess,
   onDeclineSuccess,
 }) => {
-  const [fullName, setFullName] = useState(guest.fullName || '');
-  const [cedula, setCedula] = useState(guest.cedula || '');
-  const [email, setEmail] = useState(guest.email || '');
-  const [area, setArea] = useState(guest.area || '');
-  const [reason, setReason] = useState('');
+  const [fullName, setFullName] = useState(() => sanitizeInitialGuestName(guest?.fullName));
+  const [cedula, setCedula] = useState(guest?.cedula || '');
+  const [email, setEmail] = useState(guest?.email || '');
+  const [area, setArea] = useState(guest?.area || '');
+  const [reason, setReason] = useState(guest?.notes || '');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen && guest) {
+      setFullName(sanitizeInitialGuestName(guest.fullName));
+      setCedula(guest.cedula || '');
+      setEmail(guest.email || '');
+      setArea(guest.area || '');
+      setReason(guest.notes || '');
+      setError(null);
+    }
+  }, [isOpen, guest]);
 
   if (!isOpen) return null;
 
@@ -79,14 +96,20 @@ export const RsvpModal: React.FC<RsvpModalProps> = ({
     e.preventDefault();
     setError(null);
 
-    if (!fullName.trim()) {
-      setError('Por favor ingresa tu nombre completo.');
+    // Validación estricta a prueba de fallos para Nombre Completo
+    const nameVal = validateGuestFullName(fullName);
+    if (!nameVal.valid) {
+      setError(nameVal.error || 'Nombre inválido.');
       return;
     }
-    if (!cedula.trim()) {
-      setError('Por favor ingresa tu número de cédula para el control de acceso.');
+
+    // Validación de Cédula numérica
+    const cedulaVal = validateGuestCedula(cedula);
+    if (!cedulaVal.valid) {
+      setError(cedulaVal.error || 'Cédula inválida.');
       return;
     }
+
     if (!area.trim()) {
       setError('Por favor selecciona tu Área de trabajo.');
       return;
@@ -96,14 +119,14 @@ export const RsvpModal: React.FC<RsvpModalProps> = ({
       setLoading(true);
       await onConfirmSuccess({
         fullName: fullName.trim(),
-        cedula: cedula.trim(),
+        cedula: cedulaVal.cleanCedula,
         email: email.trim(),
         area: area.trim(),
       });
       launchCelebrationConfetti();
       onClose();
-    } catch {
-      setError('Hubo un error al confirmar tu asistencia. Por favor intenta de nuevo.');
+    } catch (err: any) {
+      setError(err?.message || 'Hubo un error al confirmar tu asistencia. Por favor intenta de nuevo.');
     } finally {
       setLoading(false);
     }
@@ -111,12 +134,32 @@ export const RsvpModal: React.FC<RsvpModalProps> = ({
 
   const handleDeclineSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+
+    // Validación estricta de Nombre y Cédula para garantizar trazabilidad en el Admin
+    const nameVal = validateGuestFullName(fullName);
+    if (!nameVal.valid) {
+      setError(nameVal.error || 'Por favor ingresa tu Nombre y Apellido real.');
+      return;
+    }
+
+    const cedulaVal = validateGuestCedula(cedula);
+    if (!cedulaVal.valid) {
+      setError(cedulaVal.error || 'Por favor ingresa tu número de cédula.');
+      return;
+    }
+
     try {
       setLoading(true);
-      await onDeclineSuccess(reason.trim());
+      await onDeclineSuccess({
+        fullName: fullName.trim(),
+        cedula: cedulaVal.cleanCedula,
+        area: area.trim(),
+        reason: reason.trim(),
+      });
       onClose();
-    } catch {
-      setError('Hubo un error registrando tu respuesta. Por favor intenta de nuevo.');
+    } catch (err: any) {
+      setError(err?.message || 'Hubo un error registrando tu respuesta. Por favor intenta de nuevo.');
     } finally {
       setLoading(false);
     }
@@ -124,7 +167,7 @@ export const RsvpModal: React.FC<RsvpModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="w-full max-w-lg">
+      <div className="w-full max-w-lg max-h-[92vh] overflow-y-auto">
         <StitchedCard bodyClassName="overflow-hidden">
           <div className="h-3 w-full candy-stripe" aria-hidden="true" />
 
@@ -140,14 +183,14 @@ export const RsvpModal: React.FC<RsvpModalProps> = ({
                       ¡Genial que nos acompañes!
                     </h3>
                     <p className="text-xs text-slate-500 mt-1">
-                      Ingresa tus datos para generar tu pase oficial
+                      Ingresa tus datos personales para generar tu Pase VIP oficial
                     </p>
                   </div>
                 </div>
 
                 {error && (
-                  <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-crem-red text-xs font-bold flex items-center gap-2">
-                    <FontAwesomeIcon icon={faExclamationCircle} />
+                  <div className="mb-4 p-3.5 rounded-xl bg-red-50 border-2 border-red-200 text-crem-red text-xs font-bold flex items-start gap-2.5">
+                    <FontAwesomeIcon icon={faExclamationCircle} className="mt-0.5 text-sm shrink-0" />
                     <span>{error}</span>
                   </div>
                 )}
@@ -156,16 +199,20 @@ export const RsvpModal: React.FC<RsvpModalProps> = ({
                   <div>
                     <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-2">
                       <FontAwesomeIcon icon={faUser} className="text-crem-red text-xs" />
-                      <span>Nombre Completo *</span>
+                      <span>Nombre y Apellidos Completos *</span>
                     </label>
                     <input
                       type="text"
                       required
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-crem-green focus:bg-white text-sm transition-all"
+                      className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-crem-green focus:bg-white text-sm transition-all font-medium"
                       placeholder="Ej: Juan David Pérez Gómez"
+                      autoFocus
                     />
+                    <span className="text-[11px] text-slate-500 mt-1 block">
+                      Escribe tu nombre y apellido real para registrar tu ingreso en portería.
+                    </span>
                   </div>
 
                   <div>
@@ -175,10 +222,11 @@ export const RsvpModal: React.FC<RsvpModalProps> = ({
                     </label>
                     <input
                       type="text"
+                      inputMode="numeric"
                       required
                       value={cedula}
                       onChange={(e) => setCedula(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-crem-green focus:bg-white text-sm transition-all"
+                      className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-crem-green focus:bg-white text-sm transition-all font-mono"
                       placeholder="Ej: 1020304050"
                     />
                     <span className="text-[11px] text-slate-500 mt-1 block">
@@ -189,7 +237,7 @@ export const RsvpModal: React.FC<RsvpModalProps> = ({
                   <div>
                     <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-2">
                       <FontAwesomeIcon icon={faBuilding} className="text-crem-green text-xs" />
-                      <span>Área *</span>
+                      <span>Área a la que perteneces *</span>
                     </label>
                     <select
                       required
@@ -242,7 +290,7 @@ export const RsvpModal: React.FC<RsvpModalProps> = ({
             ) : (
               <div>
                 <div className="flex items-center gap-3.5 mb-4">
-                  <div className="w-12 h-12 rounded-2xl bg-red-50 text-crem-red flex items-center justify-center text-xl shrink-0">
+                  <div className="w-12 h-12 rounded-2xl bg-rose-50 text-crem-red flex items-center justify-center text-xl shrink-0">
                     <FontAwesomeIcon icon={faHeart} />
                   </div>
                   <div>
@@ -250,18 +298,79 @@ export const RsvpModal: React.FC<RsvpModalProps> = ({
                       Te extrañaremos en la fiesta
                     </h3>
                     <p className="text-xs text-slate-500 mt-1">
-                      Agradecemos que nos avises para coordinar el catering
+                      Por favor indícanos tus datos para registrar formalmente tu novedad
                     </p>
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#FAF6EE] border border-[#e5d8c3] text-xs text-slate-700 mb-5 leading-relaxed">
-                  Sabemos que a veces se presentan compromisos y viajes imprevistos. Desde ya,{' '}
-                  <strong className="text-slate-900">{companyName}</strong> te agradece inmensamente por toda
-                  tu entrega, pasión y esfuerzo en este gran año.
+                <div className="p-3.5 rounded-2xl bg-[#FAF6EE] border border-[#e5d8c3] text-xs text-slate-700 mb-4 leading-relaxed flex items-start gap-2.5">
+                  <FontAwesomeIcon icon={faInfoCircle} className="text-crem-red mt-0.5 text-sm shrink-0" />
+                  <span>
+                    Para garantizar la trazabilidad de tu área y coordinar el catering, solicitamos tu <strong>Nombre y Cédula</strong>. Desde ya, <strong className="text-slate-900">{companyName}</strong> te agradece por tu dedicación este año.
+                  </span>
                 </div>
 
+                {error && (
+                  <div className="mb-4 p-3.5 rounded-xl bg-red-50 border-2 border-red-200 text-crem-red text-xs font-bold flex items-start gap-2.5">
+                    <FontAwesomeIcon icon={faExclamationCircle} className="mt-0.5 text-sm shrink-0" />
+                    <span>{error}</span>
+                  </div>
+                )}
+
                 <form onSubmit={handleDeclineSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-2">
+                      <FontAwesomeIcon icon={faUser} className="text-crem-red text-xs" />
+                      <span>Nombre y Apellidos Completos *</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border-2 border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-slate-500 focus:bg-white text-sm transition-all font-medium"
+                      placeholder="Ej: Juan David Pérez Gómez"
+                      autoFocus
+                    />
+                    <span className="text-[11px] text-slate-500 mt-1 block">
+                      Ingresa tu nombre para registrar tu novedad en la lista de gestión humana.
+                    </span>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-2">
+                      <FontAwesomeIcon icon={faIdCard} className="text-crem-red text-xs" />
+                      <span>Número de Cédula / Documento *</span>
+                    </label>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      required
+                      value={cedula}
+                      onChange={(e) => setCedula(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border-2 border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-slate-500 focus:bg-white text-sm transition-all font-mono"
+                      placeholder="Ej: 1020304050"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-2">
+                      <FontAwesomeIcon icon={faBuilding} className="text-slate-500 text-xs" />
+                      <span>Área a la que perteneces (Opcional)</span>
+                    </label>
+                    <select
+                      value={area}
+                      onChange={(e) => setArea(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border-2 border-slate-200 text-slate-900 focus:outline-none focus:border-slate-500 focus:bg-white text-sm transition-all cursor-pointer font-medium"
+                    >
+                      <option value="">Selecciona tu área (opcional)...</option>
+                      <option value="Logística">Logística</option>
+                      <option value="Comercial">Comercial</option>
+                      <option value="Mantenimiento">Mantenimiento</option>
+                      <option value="Administración">Administración</option>
+                    </select>
+                  </div>
+
                   <div>
                     <label className="block text-xs font-bold text-slate-700 mb-1.5">
                       ¿Deseas dejarnos un mensaje o motivo? (Opcional)
@@ -270,8 +379,8 @@ export const RsvpModal: React.FC<RsvpModalProps> = ({
                       rows={2}
                       value={reason}
                       onChange={(e) => setReason(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border-2 border-slate-200 text-slate-900 text-xs focus:outline-none focus:border-slate-400 focus:bg-white"
-                      placeholder="Ej: Compromiso familiar fuera de la ciudad..."
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border-2 border-slate-200 text-slate-900 text-xs focus:outline-none focus:border-slate-500 focus:bg-white"
+                      placeholder="Ej: Turno programado, compromiso familiar fuera de la ciudad..."
                     />
                   </div>
 
@@ -287,10 +396,10 @@ export const RsvpModal: React.FC<RsvpModalProps> = ({
                     <button
                       type="submit"
                       disabled={loading}
-                      className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-slate-800 hover:bg-slate-700 text-white font-display text-sm tracking-wide transition-colors disabled:opacity-50 cursor-pointer"
+                      className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-slate-800 hover:bg-slate-900 text-white font-display text-sm tracking-wide transition-colors disabled:opacity-50 cursor-pointer shadow-md"
                     >
                       <FontAwesomeIcon icon={faTimesCircle} />
-                      <span>{loading ? 'Guardando...' : 'Confirmar no asistencia'}</span>
+                      <span>{loading ? 'Registrando...' : 'Confirmar no asistencia'}</span>
                     </button>
                   </div>
                 </form>

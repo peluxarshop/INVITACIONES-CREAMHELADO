@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { serverUpdateGuestRsvp, serverGetGuestById } from '@/lib/serverStore';
 import { GuestStatus } from '@/types';
+import { isGenericGuestName } from '@/lib/guestValidation';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,6 +20,13 @@ export async function POST(request: Request) {
 
     if (!id || !status) {
       return NextResponse.json({ success: false, error: 'Faltan parámetros requeridos (id, status)' }, { status: 400 });
+    }
+
+    if (fullName && isGenericGuestName(fullName)) {
+      return NextResponse.json(
+        { success: false, error: 'Por favor ingresa tu Nombre y Apellido real completo' },
+        { status: 400 }
+      );
     }
 
     const updated = await serverUpdateGuestRsvp(id, status, {

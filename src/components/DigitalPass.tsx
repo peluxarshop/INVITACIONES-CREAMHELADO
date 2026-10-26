@@ -21,6 +21,7 @@ import {
 import { EventConfig, Guest } from '@/types';
 import { LogoOutlined, StitchedCard } from '@/components/festive/Festive';
 import { formatEventSchedule } from '@/lib/timeUtils';
+import { isGenericGuestName } from '@/lib/guestValidation';
 
 interface DigitalPassProps {
   guest: Guest;
@@ -107,7 +108,7 @@ export const DigitalPass: React.FC<DigitalPassProps> = ({ guest, config }) => {
               Invitado(a) de Honor
             </span>
             <div className="font-display text-slate-900 text-2xl sm:text-3xl leading-none mt-1 break-words">
-              {guest.fullName}
+              {isGenericGuestName(guest.fullName) ? 'Colaborador(a) Confirmado(a)' : guest.fullName}
             </div>
             {guest.cedula && (
               <div className="text-xs text-slate-700 mt-2 flex items-center gap-2">

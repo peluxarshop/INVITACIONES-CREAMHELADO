@@ -384,9 +384,16 @@ export const AdminGuestTable: React.FC<AdminGuestTableProps> = ({
                           <span>Confirmado</span>
                         </div>
                       ) : guest.status === 'declined' ? (
-                        <div className="flex items-center gap-1.5 text-rose-600 font-bold">
-                          <FontAwesomeIcon icon={faTimesCircle} />
-                          <span>No Asiste</span>
+                        <div>
+                          <div className="flex items-center gap-1.5 text-rose-600 font-bold">
+                            <FontAwesomeIcon icon={faTimesCircle} />
+                            <span>No Asiste</span>
+                          </div>
+                          {guest.notes && (
+                            <div className="text-[11px] text-slate-500 italic mt-0.5 max-w-[180px] truncate" title={`Motivo: ${guest.notes}`}>
+                              &quot;{guest.notes}&quot;
+                            </div>
+                          )}
                         </div>
                       ) : (
                         <div className="flex items-center gap-1.5 text-amber-600 font-bold">

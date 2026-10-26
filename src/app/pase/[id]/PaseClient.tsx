@@ -208,6 +208,12 @@ export const PaseClient: React.FC<PaseClientProps> = ({ guestId }) => {
                     Confirmado el: {new Date(guest.confirmedAt).toLocaleString('es-CO')}
                   </div>
                 )}
+
+                {guest.notes && (
+                  <div className="mt-2 text-xs text-slate-700 bg-white p-2 rounded-lg border border-[#e5d8c3]">
+                    <span className="font-bold text-slate-900">Nota / Motivo:</span> {guest.notes}
+                  </div>
+                )}
               </div>
 
               {/* Detalles del Evento */}
